@@ -1,0 +1,24 @@
+logs_index:
+    path:     /
+    defaults: { _controller: "CpdgAdministradorBundle:Logs:index" }
+    methods:  [GET, POST]
+
+logs_show:
+    path:     /{id}/show
+    defaults: { _controller: "CpdgAdministradorBundle:Logs:show" }
+    methods:  [GET, POST]
+
+logs_new:
+    path:     /new
+    defaults: { _controller: "CpdgAdministradorBundle:Logs:new" }
+    methods:  [GET, POST]
+
+logs_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "CpdgAdministradorBundle:Logs:edit" }
+    methods:  [GET, POST]
+
+logs_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "CpdgAdministradorBundle:Logs:delete" }
+    methods:  [GET, POST]

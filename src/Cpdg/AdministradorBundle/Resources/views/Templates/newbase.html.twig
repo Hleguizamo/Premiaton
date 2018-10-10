@@ -1,0 +1,177 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div style="max-width: 30%; margin: 0px auto;">
+    {% if namevar == "proveedores" %}
+    <div class="downloadpost" style="font-size:24px;">Nuevo Proveedor y Usuario</div>
+    {% else %}
+    <div class="downloadpost" style="font-size:24px;">Nuevo {{ titulo }}</div>
+    {% endif %}
+
+    {{ form_start(form) }}
+      {% if nuevomensaje is defined %}
+        <label>
+          <input type="checkbox" id="todos" name="todos" value="1"> ¿Enviar a todos los usuarios del sistema?
+        </label>
+      {% endif %} 
+      
+        {{ form_widget(form) }}
+        <input type="submit" value="Crear Nuevo" class="{{ button_css|default("btn btn-primary") }}" />
+    {{ form_end(form) }}
+	<div>&nbsp;</div>
+    <div>
+        <a href="javascript:history.back(-1);" class="{{ button_css|default("btn btn-link") }}">
+		<i class="fa fa-long-arrow-left"></i> Volver
+		</a>
+	</div>
+    </div>
+    {% if setMes is defined %}
+    <script type="text/javascript">
+        setMes();
+        function setMes(){          
+          document.getElementById("eventos_fecha_month").options.length=0;
+          document.getElementById("eventos_fechaFin_month").options.length=0;
+          var min = 1,
+              max = 12,
+              select = document.getElementById('eventos_fecha_month'),
+              select2 = document.getElementById('eventos_fechaFin_month');
+
+          for (var i = min; i<=max; i++){
+              var mes;
+              switch(i){
+                case 1: mes = 'Ene'; break;
+                case 2: mes = 'Feb'; break;
+                case 3: mes = 'Mar'; break;
+                case 4: mes = 'Abr'; break;
+                case 5: mes = 'May'; break;
+                case 6: mes = 'Jun'; break;
+                case 7: mes = 'Jul'; break;
+                case 8: mes = 'Ago'; break;
+                case 9: mes = 'Sep'; break;
+                case 10: mes = 'Oct'; break;
+                case 11: mes = 'Nov'; break;
+                case 12: mes = 'Dic'; break;
+              }
+              var opt = document.createElement('option');
+              opt.value = i;
+              opt.innerHTML = mes;
+
+              var opt2 = document.createElement('option');
+              opt2.value = i;
+              opt2.innerHTML = mes;
+
+              select.appendChild(opt);
+              select2.appendChild(opt2);
+          }
+        }
+    </script>
+
+    {% endif %} 
+    <script type="text/javascript">
+      function validarformato(objvar){
+          var file = objvar.files[0];
+          var tmp1 = objvar.value.split(".");
+          var boovar = false;
+
+          if(file.size < 50000){
+            boovar = true;
+          }
+
+          if(file.size > 2048000){
+            boovar = true;
+          }
+
+          if(tmp1[1] != "jpg" && tmp1[1] != "png"){
+            boovar = true;
+          }
+
+          if(boovar == true){
+              objvar.value = "";
+              swal(
+                '',
+                'Error: La imágen debe estar en formato JPG ó PNG y para su mejor enfoque debe ser cuadrada, el mínimo de tamaño permitido es 50 Kb y el máximo es de 2 Mb',
+                'warning'
+              )
+          }
+        }
+        function validarformato2(objvar){
+          var file = objvar.files[0];
+          var tmp1 = objvar.value.split(".");
+          var boovar = false;
+
+          if(file.size < 20000){
+            boovar = true;
+          }
+
+          if(file.size > 2048000){
+            boovar = true;
+          }
+
+          if(tmp1[1] != "jpg" && tmp1[1] != "png"){
+            boovar = true;
+          }
+
+          if(boovar == true){
+              objvar.value = "";
+              swal(
+                '',
+                'Error: La imágen debe estar en formato JPG ó PNG y las medidas de la imágen deben ser: 871px X 89px, el mínimo de tamaño permitido es 20 Kb y el máximo es de 2 Mb',
+                'warning'
+              )
+          }
+        }
+        function validarformato3(objvar){
+          var file = objvar.files[0];
+          var tmp1 = objvar.value.split(".");
+          var boovar = false;
+
+          if(file.size < 20000){
+            boovar = true;
+          }
+
+          if(file.size > 2048000){
+            boovar = true;
+          }
+
+          if(tmp1[1] != "jpg" && tmp1[1] != "png"){
+            boovar = true;
+          }
+
+          if(boovar == true){
+              objvar.value = "";
+              swal(
+                '',
+                'Error: La imágen debe estar en formato JPG ó PNG y las medidas de la imágen deben ser: 200px X 152px, el mínimo de tamaño permitido es 20 Kb y el máximo es de 2 Mb',
+                'warning'
+              )
+          }
+        }
+        function validarformato4(objvar){
+          var file = objvar.files[0];
+          var tmp1 = objvar.value.split(".");
+          var boovar = false;
+
+          if(file.size < 50000){
+            boovar = true;
+          }
+
+          if(file.size > 2048000){
+            boovar = true;
+          }
+
+          if(tmp1[1] != "jpg" && tmp1[1] != "png"){
+            boovar = true;
+          }
+
+          if(boovar == true){
+              objvar.value = "";
+              swal(
+                '',
+                'Error: La imágen debe estar en formato JPG ó PNG y para su mejor enfoque debe ser cuadrada, el mínimo de tamaño permitido es 50 Kb y el máximo es de 2 Mb, el tamaño sugerido es 500px X 500px',
+                'warning'
+              )
+          }
+        }
+    </script>
+	
+{% endblock %}

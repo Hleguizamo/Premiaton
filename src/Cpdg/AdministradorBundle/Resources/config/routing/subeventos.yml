@@ -1,0 +1,52 @@
+subeventos_index:
+    path:     /{id}/
+    defaults: { _controller: "CpdgAdministradorBundle:SubEventos:index" }
+    methods:  [GET, POST]
+subeventos_show:
+    path:     /{id}/show
+    defaults: { _controller: "CpdgAdministradorBundle:SubEventos:show" }
+    methods:  [GET, POST]
+subeventos_new:
+    path:     /new/new
+    defaults: { _controller: "CpdgAdministradorBundle:SubEventos:new" }
+    methods:  [GET, POST]
+subeventos_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "CpdgAdministradorBundle:SubEventos:edit" }
+    methods:  [GET, POST]
+subeventos_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "CpdgAdministradorBundle:SubEventos:delete" }
+    methods:  [GET, POST]
+subeventos_cargarProveedores:
+    path:     /{id}/cargarProveedores
+    defaults: { _controller: "CpdgAdministradorBundle:SubEventos:cargarProveedores" }
+    methods:  [GET, POST]
+subeventos_setProveedor:
+    path:     /{id}/setProveedor
+    defaults: { _controller: "CpdgAdministradorBundle:SubEventos:setProveedor" }
+    methods:  [GET, POST]
+subeventos_actualizarProveedores:
+    path:     /{id}/actualizarProveedores
+    defaults: { _controller: "CpdgAdministradorBundle:SubEventos:actualizarProveedores" }
+    methods:  [GET, POST]
+subeventos_cargarInscripciones:
+    path:     /{id}/cargarInscripciones
+    defaults: { _controller: "CpdgAdministradorBundle:SubEventos:cargarInscripciones" }
+    methods:  [GET, POST]
+subeventos_cargarGanadores:
+    path:     /{id}/cargarGanadores
+    defaults: { _controller: "CpdgAdministradorBundle:SubEventos:cargarGanadores" }
+    methods:  [GET, POST]
+subeventos_cargarAleatorio:
+    path:     /{id}/cargarAleatorio
+    defaults: { _controller: "CpdgAdministradorBundle:SubEventos:cargarAleatorio" }
+    methods:  [GET, POST]
+subeventos_pantallaGanadores:
+    path:     /{id}/pantallaGanadores
+    defaults: { _controller: "CpdgAdministradorBundle:SubEventos:pantallaGanadores" }
+    methods:  [GET, POST]
+subeventos_generarReporte:
+    path:     /{id}/generarReporte
+    defaults: { _controller: "CpdgAdministradorBundle:SubEventos:generarReporte" }
+    methods:  [GET, POST]

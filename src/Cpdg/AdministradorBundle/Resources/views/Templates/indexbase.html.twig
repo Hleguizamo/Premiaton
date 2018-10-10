@@ -1,0 +1,1376 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {% if completeSearch is defined %}
+        <script type="text/javascript">
+          var types = new Array();
+          var fields  = new Array();
+        </script>
+        <div id="realLoadingDiv" style="position: absolute; background-color: #FFFFFF; width: 300px; height: 20px; z-index: 99999999;"><img src="{{ asset("images/loader.gif") }}"> &nbsp; &nbsp; Cambiando estado de proveedor</div>
+        <script type="text/javascript">
+          $("#realLoadingDiv").css('left', -500);
+          $("#realLoadingDiv").css('top', 0);
+        </script>
+        <!-- Modal completeSearch -->
+          <div id="completeSearchDiv" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title"><i class="fa fa-search-plus" aria-hidden="true"></i> Búsqueda Avanzada</h4>
+                </div>
+                <div class="modal-body">
+                  <form class="uk-panel uk-panel-box uk-form" method="POST" action="" id="buscarAdvanzadoForm" autocomplete="off">
+                    <div class='input-group' id='mainBuscar'>                      
+                      <select id="fieldType" class="form-control" style="height:46px;">
+                      <!-- <option value="0">Todos</option>
+                      <script type="text/javascript">
+                            types.push('text');
+                      </script> -->
+                      {% set counterFields = 1 %}
+                      {% set counterFields0 = 0 %}
+                      {% for campos in completeSearchFields["etiquetas"] %}
+
+                        <option value="{{ counterFields }}">{{ campos }}</option>
+                        <script type="text/javascript">
+                            types.push('{{ completeSearchFields["tipos"][counterFields0] }}');
+                            fields.push('{{ completeSearchFields["campos"][counterFields0] }}');
+                        </script>
+                      {% set counterFields0 = counterFields0 + 1 %}
+                      {% set counterFields = counterFields + 1 %}                      
+                      {% endfor %}
+                      </select>
+
+                      <span class="input-group-addon">                        
+                        <button type="button" class="btn btn-primary" onclick="addField();"><i class="fa fa-plus-square" aria-hidden="true"></i></button>
+                      </span>                      
+                    </div>
+                    <div id="setFieldDiv"><p>&nbsp;</p></div>                    
+                    <label>&nbsp;</label><br>
+                    <div style="text-align: right;">
+                    <input type="hidden" name="completeSearchCounter" id="completeSearchCounter" value="123">
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+    {% endif %}
+    {% if loadFile is defined %}
+    <!-- Modal Upload -->
+    <div id="uploadModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal Upload -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Cargar Excel</h4>
+            <p>&nbsp;</p>
+            <div class="alert alert-success">
+            <strong><a href="{{ asset('uploads/formatoCargaProveedores.xls') }}" target="_blank"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Descargar Formato de Carga de Proveedores</a></strong>
+          </div>
+          </div>
+          <div class="modal-body">
+              {{ form_start(form, {'action': 'loadFile'}) }}
+                    {{ form_widget(form) }}
+                    <input type="submit" class="btn btn-primary" value="Cargar Archivo"></input>
+                {{ form_end(form) }}
+          </div>
+
+          <div class="modal-footer" style="text-align:right;">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    {% endif %}
+
+    {% if proveedores is defined %}
+    <script type="text/javascript">
+      window.idEventoJs;
+      window.cantidadProveedoresJs;
+
+      function setTareas(idEvento){
+        window.idEventoJs = idEvento;
+      }
+
+      function loadProveedores(idVar, cantidadvar){
+        window.cantidadProveedoresJs = cantidadvar;
+        window.idEventoJs = idVar;
+        document.getElementById("loadingDiv").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Cargando Proveedores Asociados al Evento<br>Recuerde que el evento tiene un máximo de (' + cantidadvar + ') Proveedores';
+        resetChecksProveedores();
+        var urlvar = '{{ url("eventos_cargarProveedores", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': idVar
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response") && data.response === "success"){
+                    if(data.hasOwnProperty("proveedores")){
+                      for(var x = 0; x < data.total; x++){                             
+                        proveedores[data.proveedores[x].idProveedor] = 1;
+                        //console.log = "--"+;
+                        console.log(data.proveedores[x].idProveedor);
+                      } 
+                      setChecksProveedores(); 
+                      document.getElementById("loadingDiv").innerHTML = 'Recuerde que el evento tiene un máximo de (' + cantidadvar + ') Proveedores';                        
+                    }else{
+                        console.log("POSTS NOT FOUND");
+                    }
+                }else{
+                  loadProveedores(idVar, cantidadvar);
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                loadProveedores(idVar, cantidadvar);
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+      //-------------------------------------------------------------------------------
+      function loadProveedoresSub(idVar, cantidadvar){
+        window.cantidadProveedoresJs = cantidadvar;
+        window.idEventoJs = idVar;
+        document.getElementById("loadingDiv").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Cargando Proveedores Asociados al Evento<br>Recuerde que el evento tiene un máximo de (' + cantidadvar + ') Proveedores';
+        resetChecksProveedoresSub();
+        var urlvar = '{{ url("subeventos_cargarProveedores", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': idVar
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response") && data.response === "success"){
+                    if(data.hasOwnProperty("proveedores")){
+                      for(var x = 0; x < data.total; x++){                             
+                        proveedores[data.proveedores[x].idProveedor] = 1;
+                        //console.log = "--"+;
+                        console.log(data.proveedores[x].idProveedor);
+                      } 
+                      setChecksProveedores(); 
+                      document.getElementById("loadingDiv").innerHTML = 'Recuerde que el evento tiene un máximo de (' + cantidadvar + ') Proveedores';                        
+                    }else{
+                        console.log("POSTS NOT FOUND");
+                    }
+                }else{
+                  //loadProveedoresSub(idVar, cantidadvar);
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                //loadProveedoresSub(idVar, cantidadvar);
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+      //-------------------------------------------------------------------------------
+      function setProveedor(idProveedor, valuevar, objid, objvar){
+        //alert(idProveedor);
+        var x = $("#" + objid).offset();
+        
+        $("#realLoadingDiv").css('left', x.left);
+        $("#realLoadingDiv").css('top', x.top - 2);
+        //alert(window.idEventoJs + "--" + idProveedor + "--" + valuevar + " -- " + window.cantidadProveedoresJs);
+          //document.getElementById("loadingDiv").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Cambiando estado de proveedor<br>Recuerde que el evento tiene un máximo de (' + window.cantidadProveedoresJs + ') Proveedores';
+        {% if namevar == "eventos" %}
+          var urlvar = '{{ url("eventos_setProveedor", { "id": "1" }) }}';
+        {% elseif namevar == "subeventos" %}
+          var urlvar = '{{ url("subeventos_setProveedor", { "id": "1" }) }}';
+        {% endif %}
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idProveedor': idProveedor,
+                'idEvento': window.idEventoJs,
+                'cantidadProveedores': window.cantidadProveedoresJs,
+                'valuevar': valuevar,
+            },
+            dataType: 'json',
+            success: function(data){ 
+                switch(data.response){
+                  case "limite": swal("","Ya ha registrado el límite de Proveedores que son: " + window.cantidadProveedoresJs,"warning"); document.getElementById(objid).checked = false; break;
+                  case "success": swal("","Proveedor Agregado Correctamente","success"); break;
+                  case "successeliminar": swal("","Proveedor desvinculado Correctamente","success"); break;
+                  case "ganador": swal("","Este proveedor tiene ganadores en el evento, no puede ser desvinculado.","warning"); document.getElementById(objid).checked = true; break
+                  case "inscrito": swal("","Ya ha inscrito esta droguería","warning"); break;
+                }  
+                $("#realLoadingDiv").css('left', -500);
+                $("#realLoadingDiv").css('top', 0); 
+
+                if(data.hasOwnProperty("response") && data.response === "success"){
+                    //alert(data.total);
+
+                    /*if(valuevar == true){
+                      document.getElementById(objid).checked = true;
+                    }else{
+                      document.getElementById(objid).checked = false;
+                    }*/
+
+                    //document.getElementById("loadingDiv").innerHTML = 'Recuerde que el evento tiene un máximo de (' + window.cantidadProveedoresJs + ') Proveedores'; 
+                }else{
+                  $("#realLoadingDiv").css('left', -500);
+                  $("#realLoadingDiv").css('top', 0);
+                  //setProveedor(idProveedor, valuevar, objid);
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                $("#realLoadingDiv").css('left', -500);
+                $("#realLoadingDiv").css('top', 0);
+                //setProveedor(idProveedor, valuevar, objid);
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+      var counterInscripciones = 0;
+      function resetInstrucciones(){
+        var table = document.getElementById("tablaUsuarios");
+        for(x = 0; x < counterInscripciones; x++ ){
+            table.deleteRow(2);
+        }
+      }
+      function resetInstruccionesSub(){
+        var table = document.getElementById("tablaUsuarios");
+        for(x = 0; x < counterInscripciones; x++ ){
+            table.deleteRow(2);
+        }
+      }
+      function loadInscripciones(idVar){
+        resetInstrucciones();
+        document.getElementById("loadingDiv2").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Cargando Droguerías Inscritas';
+
+        var urlvar = '{{ url("eventos_cargarInscripciones", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': idVar
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response") && data.response === "success"){
+                    if(data.hasOwnProperty("inscripciones")){
+                      var table = document.getElementById("tablaUsuarios");
+                      counterInscripciones = data.total;
+                      var y = 0;
+                      for(var x = 0; x < data.total; x++){                             
+                       // proveedores[data.proveedores[x].id] = 1;
+                        y = x+2;
+                        var row = table.insertRow(y);
+                        var cell_1 = row.insertCell(0);
+                        var cell_2 = row.insertCell(1);
+                        var cell_3 = row.insertCell(2);
+                        var cell_4 = row.insertCell(3);
+                        var cell_5 = row.insertCell(4);
+                        var cell_6 = row.insertCell(5);
+                        var cell_7 = row.insertCell(6);
+                        var cell_8 = row.insertCell(7);
+                        var cell_9 = row.insertCell(8);
+
+                        cell_1.innerHTML = x+1;
+                        cell_2.innerHTML = data.inscripciones[x].idSorteo;
+                        cell_3.innerHTML = data.inscripciones[x].proveedor;
+                        cell_4.innerHTML = data.inscripciones[x].nit;
+                        cell_5.innerHTML = data.inscripciones[x].asociado;
+                        cell_6.innerHTML = data.inscripciones[x].codigo;
+                        cell_7.innerHTML = data.inscripciones[x].nombreDrogueria;
+                        cell_8.innerHTML = data.inscripciones[x].fecha;
+                        cell_9.innerHTML = data.inscripciones[x].hora;
+                      } 
+                      document.getElementById("loadingDiv2").innerHTML = '';                           
+                    }else{
+                        console.log("POSTS NOT FOUND");
+                    }
+                }else{
+                  //loadInscripciones();
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                //loadInscripciones();
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+      //-------------------------------------------------------------------------------------
+
+      function loadInscripcionesSub(idEventoVar, idVar){
+        resetInstruccionesSub();
+        document.getElementById("loadingDiv2").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Cargando Droguerías Inscritas';
+
+        var urlvar = '{{ url("subeventos_cargarInscripciones", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': idEventoVar,
+                'idVar': idVar,
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response") && data.response === "success"){
+                    if(data.hasOwnProperty("inscripciones")){
+                      var table = document.getElementById("tablaUsuarios");
+                      counterInscripciones = data.total;
+                      var y = 0;
+                      for(var x = 0; x < data.total; x++){                             
+                       // proveedores[data.proveedores[x].id] = 1;
+                        y = x+2;
+                        var row = table.insertRow(y);
+                        var cell_1 = row.insertCell(0);
+                        var cell_2 = row.insertCell(1);
+                        var cell_3 = row.insertCell(2);
+                        var cell_4 = row.insertCell(3);
+                        var cell_5 = row.insertCell(4);
+                        var cell_6 = row.insertCell(5);
+                        var cell_7 = row.insertCell(6);
+                        var cell_8 = row.insertCell(7);
+
+                        cell_1.innerHTML = x+1;
+                        cell_2.innerHTML = data.inscripciones[x].proveedor;
+                        cell_3.innerHTML = data.inscripciones[x].nit;
+                        cell_4.innerHTML = data.inscripciones[x].asociado;
+                        cell_5.innerHTML = data.inscripciones[x].codigo;
+                        cell_6.innerHTML = data.inscripciones[x].nombreDrogueria;
+                        cell_7.innerHTML = data.inscripciones[x].fecha;
+                        cell_8.innerHTML = data.inscripciones[x].hora;
+                      } 
+                      document.getElementById("loadingDiv2").innerHTML = '';                           
+                    }else{
+                        console.log("POSTS NOT FOUND");
+                    }
+                }else{
+                  //loadInscripciones();
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                //loadInscripciones();
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+
+      //--------Ganadores
+
+      var counterGanadores = 0;
+      function resetGanadores(){
+        var table = document.getElementById("tablaGanadores");
+        var counter = document.getElementById("tablaGanadores").rows.length;
+        for(x = 0; x < counter; x++ ){
+            try {
+                table.deleteRow(2);
+            }catch(err) {
+                //
+            }
+        }
+        //--------------------------
+        var table = document.getElementById("tablaGanadoresAP");
+        var counter = document.getElementById("tablaGanadoresAP").rows.length;
+        for(x = 0; x < counter; x++ ){
+            try {
+                table.deleteRow(2);
+            }catch(err) {
+                //
+            }
+        }
+        //--------------------------
+        var table = document.getElementById("tablaGanadoresAA");
+        var counter = document.getElementById("tablaGanadoresAA").rows.length;
+        for(x = 0; x < counter; x++ ){
+            try {
+                table.deleteRow(2);
+            }catch(err) {
+                //
+            }
+        }
+      }
+      function resetGanadoresEmpleados(){
+        var table = document.getElementById("tablaGanadoresEmpleados");
+        for(x = 0; x < counterGanadores; x++ ){
+            table.deleteRow(2);
+        }
+      }
+      var intervalo;
+
+      function startIntervalo(idVar, mostrarvalor, premio, valor){
+        resetGanadores();
+        loadGanadores(idVar, mostrarvalor, premio, valor);
+        clearInterval(intervalo);
+        intervalo = setInterval(function(){ loadGanadores(idVar, mostrarvalor, premio, valor); }, 60000);
+      }
+
+      function loadGanadores(idVar, mostrarvalor, premio, valor){
+        
+        resetGanadores();
+        document.getElementById("loadingDiv3").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Actualizando Ganadores';
+        document.getElementById("loadingDivScreen").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Actualizando Ganadores';
+
+        if(mostrarvalor == 0){
+          document.getElementById("premiodiv").innerHTML = premio;
+        }else{
+          document.getElementById("premiodiv").innerHTML = premio + '<br>$ ' + valor;
+        }
+
+        var urlvar = '{{ url("eventos_cargarGanadores", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': idVar
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response") && data.response === "success"){
+                    if(data.hasOwnProperty("ganadores")){
+                      var table = document.getElementById("tablaGanadores");
+                      var table2 = document.getElementById("tablaGanadoresScreen");
+
+                      counterGanadores = data.totalb;                      
+                      var y = 0;
+                      if(data.totalb > 0){
+                        for(var x = 0; x < counterGanadores; x++){
+                          y = x+2;
+                          var row = table.insertRow(y);
+                          var cell_1 = row.insertCell(0);
+                          var cell_2 = row.insertCell(1);
+                          var cell_3 = row.insertCell(2);
+                          var cell_4 = row.insertCell(3);
+                          var cell_5 = row.insertCell(4);
+                          var cell_6 = row.insertCell(5);
+                          var cell_7 = row.insertCell(6);
+                          var cell_8 = row.insertCell(7);
+                          var cell_9 = row.insertCell(8);
+                          cell_1.innerHTML = x+1;
+                          cell_2.innerHTML = data.todoslosganadores[x].idSorteo;
+                          cell_3.innerHTML = data.todoslosganadores[x].proveedor;
+                          cell_4.innerHTML = data.todoslosganadores[x].nit;
+                          cell_5.innerHTML = data.todoslosganadores[x].asociado;
+                          cell_6.innerHTML = data.todoslosganadores[x].codigo;
+                          cell_7.innerHTML = data.todoslosganadores[x].nombreDrogueria;
+                          cell_8.innerHTML = data.todoslosganadores[x].fecha;
+                          cell_9.innerHTML = data.todoslosganadores[x].hora;
+                        } 
+                      }
+
+                      //-----------------------------
+                      var table = document.getElementById("tablaGanadoresAP");
+                      y = 0;
+                      var totalb = data.aleatoriosProveedores.length;
+                      if(totalb > 0){
+                        for(var x = 0; x < totalb; x++){
+                          y = x+2;
+                          var row = table.insertRow(y);
+                          var cell_1 = row.insertCell(0);
+                          var cell_2 = row.insertCell(1);
+                          var cell_3 = row.insertCell(2);
+                          var cell_4 = row.insertCell(3);
+
+                          cell_1.innerHTML = x+1;
+                          cell_2.innerHTML = data.aleatoriosProveedores[x].nombre;
+                          cell_3.innerHTML = data.aleatoriosProveedores[x].fecha;
+                          cell_4.innerHTML = data.aleatoriosProveedores[x].hora;
+                        } 
+                      }
+
+                      //-----------------------------
+                      var table = document.getElementById("tablaGanadoresAA");
+                      y = 0;
+                      var totalb = data.aleatoriosAsociados.length;
+                      if(totalb > 0){
+                        for(var x = 0; x < totalb; x++){
+                          y = x+2;
+                          var row = table.insertRow(y);
+                          var cell_1 = row.insertCell(0);
+                          var cell_2 = row.insertCell(1);
+                          var cell_3 = row.insertCell(2);
+                          var cell_4 = row.insertCell(3);
+
+                          cell_1.innerHTML = x+1;
+                          cell_2.innerHTML = data.aleatoriosAsociados[x].nombre;
+                          cell_3.innerHTML = data.aleatoriosAsociados[x].fecha;
+                          cell_4.innerHTML = data.aleatoriosAsociados[x].hora;
+                        } 
+                      }
+
+                      document.getElementById("loadingDiv3").innerHTML = '';  
+                      document.getElementById("loadingDivScreen").innerHTML = '';  
+
+                    }else{
+                        console.log("POSTS NOT FOUND");
+                    }
+                }else{
+                  loadGanadores(idVar);
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                loadGanadores(idVar);
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+      //-----------------------------------------------------------------------------------
+      function loadGanadoresSub(idVar){
+        resetGanadores();
+        document.getElementById("loadingDiv3").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Cargando Ganadores';
+        var urlvar = '{{ url("subeventos_cargarGanadores", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': idVar
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response") && data.response === "success"){
+                    if(data.hasOwnProperty("ganadores")){
+                      var table = document.getElementById("tablaGanadores");
+                      counterGanadores = data.total;
+                      var y = 0;
+                      for(var x = 0; x < data.total; x++){                             
+                       // proveedores[data.proveedores[x].id] = 1;
+                        y = x+2;
+                        var row = table.insertRow(y);
+                        var cell_1 = row.insertCell(0);
+                        var cell_2 = row.insertCell(1);
+                        var cell_3 = row.insertCell(2);
+                        var cell_4 = row.insertCell(3);
+                        var cell_5 = row.insertCell(4);
+                        var cell_6 = row.insertCell(5);
+                        var cell_7 = row.insertCell(6);
+                        var cell_8 = row.insertCell(7);
+
+                        cell_1.innerHTML = x+1;
+                        cell_2.innerHTML = data.ganadores[x].proveedor;
+                        cell_3.innerHTML = data.ganadores[x].nit;
+                        cell_4.innerHTML = data.ganadores[x].asociado;
+                        cell_5.innerHTML = data.ganadores[x].codigo;
+                        cell_6.innerHTML = data.ganadores[x].nombreDrogueria;
+                        cell_7.innerHTML = data.ganadores[x].fecha;
+                        cell_8.innerHTML = data.ganadores[x].hora;
+                      } 
+                      document.getElementById("loadingDiv3").innerHTML = '';                           
+                    }else{
+                        console.log("POSTS NOT FOUND");
+                    }
+                }else{
+                  loadGanadores(idVar);
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                loadGanadores(idVar);
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+      //-----------------------------------------------------------------------------------
+      function loadGanadoresEmpleados(idVar){
+        resetGanadoresEmpleados();
+        document.getElementById("loadingDiv6").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Cargando Ganadores';
+        var urlvar = '{{ url("eventosempleados_cargarGanadores", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': idVar
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response") && data.response === "success"){
+                    if(data.hasOwnProperty("ganadores")){
+                      var table = document.getElementById("tablaGanadoresEmpleados");
+                      counterGanadores = data.total;
+                      var y = 0;
+                      for(var x = 0; x < data.total; x++){                             
+                       // proveedores[data.proveedores[x].id] = 1;
+                        y = x+2;
+                        var row = table.insertRow(y);
+                        var cell_1 = row.insertCell(0);
+                        var cell_2 = row.insertCell(1);
+                        var cell_3 = row.insertCell(2);
+                        var cell_4 = row.insertCell(3);
+                        var cell_5 = row.insertCell(4);
+                        var cell_6 = row.insertCell(5);
+                        var cell_7 = row.insertCell(6);
+                        var cell_8 = row.insertCell(7);
+                        var cell_9 = row.insertCell(8);
+                        var cell_10 = row.insertCell(9);
+                        var cell_11 = row.insertCell(10);
+
+
+                        cell_1.innerHTML = x+1;
+                        cell_2.innerHTML = data.ganadores[x].centro;
+                        cell_3.innerHTML = data.ganadores[x].codigo;
+                        cell_4.innerHTML = data.ganadores[x].nombre;
+                        cell_5.innerHTML = data.ganadores[x].cedula;
+                        cell_6.innerHTML = data.ganadores[x].direccion;
+                        cell_7.innerHTML = data.ganadores[x].departamento;
+                        cell_8.innerHTML = data.ganadores[x].ciudad;
+                        cell_9.innerHTML = data.ganadores[x].telefono;
+                        cell_10.innerHTML = data.ganadores[x].fecha;
+                        cell_11.innerHTML = data.ganadores[x].hora;
+                      } 
+                      document.getElementById("loadingDiv6").innerHTML = '';                           
+                    }else{
+                        console.log("POSTS NOT FOUND");
+                    }
+                }else{
+                  //loadGanadoresEmpleados(idVar);
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                //loadGanadoresEmpleados(idVar);
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+    </script>
+    <style type="text/css">
+    .modal.modal-wide .modal-dialog {
+      width: 98%;
+    }
+    .modal-wide .modal-body {
+      
+    }
+
+    #tallModal .modal-body #inscripcionesModal { margin-bottom: 0px; }
+</style>
+
+    <!-- Modal Ganadores -->
+    <div id="tallModal" class="modal modal-wide fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal Upload -->
+        <div class="modal-content">          
+          <div class="modal-body">
+              <div id="ganadoresDiv" style="background-size:cover; background-position:center; height:560px;">
+              <div style="position: absolute; border:0px solid #000000; width: 48%; height: 70%; bottom: 20px; left: 20px; overflow-y: auto; overflow-x: hidden;">
+
+              <table id="tablaGanadoresScreen" class="table table-bordered table-condensed table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th align="center" colspan="6"><div id="premiodiv" style="text-align: center; background-color: #FFFFFF; font-size: 16px; padding: 10px;"></div><center><div style="background-color: #FFFFFF; padding: 10px; text-align: center;">GANADORES</div> <div id="loadingDivScreen" style="background-color: #FFFFFF; padding: 10px;"><i class="fa fa-spinner" aria-hidden="true"></i></div></center></th>
+                  </tr>
+                  <tr bgcolor="#FFFFFF">
+                    <th align="center">#</th>
+                    <th align="center">Nit</th>
+                    <th align="center">Asociado</th>
+                    <th align="center">Código</th>
+                    <th align="center">Droguería</th>
+                    <th align="center">Fecha</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                    <td colspan="6"></td>
+                  </tr>
+
+                </tbody>
+              </table>
+
+              </div>
+                <div style="position:absolute; right:6px;top:0px;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               </div>
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Proveedor Aleatorio -->
+    <div id="proveedorAleatorioModal" class="modal modal-wide fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal Upload -->
+        <div class="modal-content">          
+          <div class="modal-body">
+              <div style="background-image:url({{ asset('images/aleatorios/fondoProveedores.jpg') }}); background-size:cover; background-position:center; height:560px;">
+             <div style="position:absolute; right:6px;top:0px;"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button></div>
+             <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td align="center" valign="bottom"><div id="proveedorAleatorioDiv" style="text-align:center; font-size:30px; color:#E65613; border:0px solid #CCCCCC;"></div></td>
+              </tr>
+            </table>
+           </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Asociado Aleatorio -->
+    <div id="asociadoAleatorioModal" class="modal modal-wide fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal Upload -->
+        <div class="modal-content">          
+          <div class="modal-body">
+              <div style="background-image:url({{ asset('images/aleatorios/fondoAsociados.jpg') }}); background-size:cover; background-position:center; height:560px;">
+             <div style="position:absolute; right:6px;top:0px;"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button></div>             
+             <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td align="center" valign="bottom"><div id="asociadoAleatorioDiv" style="text-align:center; font-size:30px; color:#E65613;"></div></td>
+              </tr>
+            </table>
+           </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--  __________________________________________________________  -->
+
+
+    <!-- Modal proveedores -->
+    <div id="proveedoresModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal Upload -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"><i class="fa fa-street-view" aria-hidden="true"></i> Lista de Provedores Asociados al Evento</h4>
+          </div>
+          <div class="modal-body">
+              <table class="table table-bordered table-condensed table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th align="center"><center>PROVEEDORES ASOCIADOS AL EVENTO <div id="loadingDiv"><i class="fa fa-spinner" aria-hidden="true"></i></div></center></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <script type="text/javascript">
+                    var proveedores = new Array();
+                  </script>
+                  {% for proveedor in proveedores %}
+                    <tr>
+                    <td>
+                      <label>
+                      <input type="checkbox" value="1" name="list_{{ proveedor.id }}" id="list_{{ proveedor.id }}" onclick="setProveedor('{{ proveedor.id }}', this.checked, this.id, this)">
+                    {{ proveedor.nombre }}
+                    </label></td>
+                  </tr>
+                  <script type="text/javascript">
+                    proveedores[{{ proveedor.id }}] = 0;
+                  </script>
+                  {% endfor %}
+                </tbody>
+              </table>
+          </div>
+
+          <div class="modal-footer" style="text-align:right;">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal Inscripciones -->
+    <div id="inscripcionesModal" class="modal modal-wide fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal Upload -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"><i class="fa fa-child" aria-hidden="true"></i> Lista de Droguerías Asociadas al Evento</h4>
+          </div>
+          <div class="modal-body">
+              <table id="tablaUsuarios" class="table table-bordered table-condensed table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th align="center" colspan="9"><center>DROGUERIAS INSCRITAS <div id="loadingDiv2"><i class="fa fa-spinner" aria-hidden="true"></i></div></center></th>
+                  </tr>
+                  <tr>
+                    <th align="center">#</th>
+                    <th align="center">Sorteo</th>
+                    <th align="center">Proveedor</th>
+                    <th align="center">Nit</th>
+                    <th align="center">Asociado</th>
+                    <th align="center">Código</th>
+                    <th align="center">Nombre Droguería</th>
+                    <th align="center">Fecha</th>
+                    <th align="center">Hora</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                    <td colspan="9"></td>
+                  </tr>
+
+                </tbody>
+              </table>
+          </div>
+
+          <div class="modal-footer" style="text-align:right;">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal Ganadores -->
+    <div id="ganadoresModal" class="modal modal-wide fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal Ganadores -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"><i class="fa fa-list-ul" aria-hidden="true"></i> Lista de Ganadores del Evento</h4>
+          </div>
+          <div class="modal-body">
+              <table id="tablaGanadores" class="table table-bordered table-condensed table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th align="center" colspan="9"><center>GANADORES <div id="loadingDiv3" style="background-color: #FFFFFF; padding: 10px;"><i class="fa fa-spinner" aria-hidden="true"></i></div></center></th>
+                  </tr>
+                  <tr>
+                    <th align="center">#</th>
+                    <th align="center">Sorteo</th>
+                    <th align="center">Proveedor</th>
+                    <th align="center">Nit</th>
+                    <th align="center">Asociado</th>
+                    <th align="center">Código</th>
+                    <th align="center">Nombre Droguería</th>
+                    <th align="center">Fecha</th>
+                    <th align="center">Hora</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                    <td colspan="9"></td>
+                  </tr>
+
+                </tbody>
+              </table>
+
+              <table id="tablaGanadoresAP" class="table table-bordered table-condensed table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th align="center" colspan="4"><center>GANADORES SORTEO ALEATORIO PROVEEDORES</center></th>
+                  </tr>
+                  <tr>
+                    <th align="center">#</th>
+                    <th align="center">Ganador</th>
+                    <th align="center">Fecha</th>
+                    <th align="center">Hora</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <td colspan="4"></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <table id="tablaGanadoresAA" class="table table-bordered table-condensed table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th align="center" colspan="4"><center>GANADORES SORTEO ALEATORIO ASOCIADOS</center></th>
+                  </tr>
+                  <tr>
+                    <th align="center">#</th>
+                    <th align="center">Ganador</th>
+                    <th align="center">Fecha</th>
+                    <th align="center">Hora</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <td colspan="4"></td>
+                  </tr>
+                </tbody>
+              </table>
+          </div>
+
+          <div class="modal-footer" style="text-align:right;">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal Ganadores Empleados -->
+    <div id="ganadoresEmpleadosModal" class="modal modal-wide fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal Ganadores Empleados -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"><i class="fa fa-list-ul" aria-hidden="true"></i> Lista de Ganadores del Evento</h4>
+          </div>
+          <div class="modal-body">
+              <table id="tablaGanadoresEmpleados" class="table table-bordered table-condensed table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th align="center" colspan="11"><center>GANADORES <div id="loadingDiv6"><i class="fa fa-spinner" aria-hidden="true"></i></div></center></th>
+                  </tr>
+                  <tr>
+                    <th align="center">#</th>
+                    <th align="center">Centro</th>
+                    <th align="center">Código</th>
+                    <th align="center">Nombre</th>
+                    <th align="center">Cédula</th>
+                    <th align="center">Dirección</th>
+                    <th align="center">Departamento</th>
+                    <th align="center">Ciudad</th>
+                    <th align="center">Teléfono</th>
+                    <th align="center">Fecha</th>
+                    <th align="center">Hora</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                    <td colspan="8"></td>
+                  </tr>
+
+                </tbody>
+              </table>
+          </div>
+
+          <div class="modal-footer" style="text-align:right;">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal Tareas -->
+    <div id="tareasModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal Tareas -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"><i class="fa fa-tasks" aria-hidden="true"></i> Otras Tareas</h4>
+          </div>
+          <div class="modal-body">
+              <label>Haga Click en el boton inferior para seleccionar un Proveedor Aleatorio</label><br><br>
+              <button type="button" class="form-control btn btn-primary" data-dismiss="modal" onclick="proveedorAleatorio();">Seleccionar Proveedor Aleatorio</button><br><br><hr color="#EEEEEE"><br>
+
+              <label>Haga Click en el boton inferior para seleccionar un Asociado Aleatorio</label><br><br>
+              <button type="button" class="form-control btn btn-primary" data-dismiss="modal" onclick="asociadoAleatorio();">Seleccionar Asociado Aleatorio</button><br><br>
+
+          </div>
+
+          <div class="modal-footer" style="text-align:right;">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="downloadpost" style="font-size:30px; color: {{ coloractual }}">{{ titulo }}</div>
+
+    <div class="col-xs-12 col-sm-12 col-md-22 col-lg-12" style="padding-bottom: 10px; left: -14px;">
+        <div class="input-group">
+          <span class="input-group-btn">
+            {% if completeSearch is defined %}
+            {% if completeSearch != "false" %}
+            <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#completeSearchDiv"><i class="fa fa-search-plus" aria-hidden="true"></i> Búsqueda</button>
+            {% endif %}
+            {% endif %}
+
+            {% if hidevertodos is defined %}{% else %}
+            <a href="" class="btn btn-primary" data-toggle="tooltip" title="Ver Todos los Registros" ><i class="fa fa-list-alt" aria-hidden="true"></i> Ver todos</a>
+            {% endif %} 
+
+            {% if new == "true" %}
+            <a href="{{ path(namevar~'_new') }}" class="btn btn-primary" data-toggle="tooltip" title="Crear Nuevo"><i class="fa fa-file-text" aria-hidden="true"></i> Crear Nuevo</a>
+            {% endif %}
+
+            {% if namevar == "proveedores" %}
+            <a href="{{ path('proveedoresusuarios_index') }}" class="btn btn-primary" data-toggle="tooltip" title="Crear Nuevo"><i class="fa fa-file-text" aria-hidden="true"></i> Ver Usuarios de Proveedores</a>
+            {% endif %}
+
+            {% if namevar == "proveedoresusuarios" %}
+            <a href="{{ path('proveedores_index') }}" class="btn btn-primary" data-toggle="tooltip" title="Crear Nuevo"><i class="fa fa-file-text" aria-hidden="true"></i> Ver Proveedores</a>
+            {% endif %}
+
+            {% if excel == "true" %}
+            <a href="{{ path(namevar~'_exportarExcel') }}" class="btn btn-primaryexcel" data-toggle="tooltip" title="Generar excel"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Generar Excel</a>
+            {% endif %}
+
+            {% if loadFile is defined %}
+            <a href="javascript:void(0);" class="btn btn-primaryexcel" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Cargar Excel</a>
+            {% endif %}            
+
+            {% if pdf == "true" %}
+            <a href="{{ path(namevar~'_new') }}" class="btn btn-primary" data-toggle="tooltip" title="Generar PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Generar PDF</a>
+            {% endif %}
+
+            {% if namevar=="administrador" %}
+            <a href="{{ path('administradorregional_index') }}" class="btn btn-primary" data-toggle="tooltip" title="Ir a Administradores Regionales"><i class="fa fa-user" aria-hidden="true"></i> Administradores Regionales</a>
+            {% endif %}
+
+            {% if namevar=="eventosempleados" %}
+            <a href="{{ path('empleados_index') }}" class="btn btn-primary" data-toggle="tooltip" title="Ver Lista de Empleados"><i class="fa fa-user" aria-hidden="true"></i> Ver Lista de Empleados</a>
+            {% endif %}
+
+            {% if namevar=="administradorregional" %}
+            <a href="{{ path('administrador_index') }}" class="btn btn-primary" data-toggle="tooltip" title="Ir a Administradores"><i class="fa fa-user" aria-hidden="true"></i> Administradores</a>
+            {% endif %}
+          </span>
+        </div>
+  </div> 
+
+  </div>
+  {% if excel == "true" %}
+
+    <form action="{{ path(namevar~'_exportarExcel') }}" method="POST" id="formExcelGeneralFecha" name="formExcelGeneralFecha">
+      <input type="hidden" name="nombre" value="">
+    </form>
+ 
+  <form action="{{ path(namevar~'_exportarExcel') }}" method="POST" id="formExcel" name="formExcel">
+    <input type="hidden" id="idvar" name="idvar" value="">
+  </form> 
+  {% endif %}
+    <div class="col-lg-12">
+    <table class="table table-condensed table-hover table-striped" border="1" bordercolor="#CCCCCC">
+        <thead>
+            <tr style="background-color:#EDEDED;">
+                {% for etiqueta in etiquetas %}
+                    <th style="text-align:center;">{{ etiqueta }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+        {% set counter1 = (startPagination + 1)  %}
+        {% for result in resultset %}
+            <tr>
+                <td>{{ result.id }}</td>
+                {#<td>{{ counter1 }}</td>#}
+                    {% include bundlevar~':_fields.html.twig' %}
+                {% if edit == "true" %}
+                {% if namevar == "eventos" or namevar == "subeventos" %}
+                  {% if result.estado == 0 %}
+                    <td class="tableclass1" width="1%" style="text-align:center;">                                     
+                      <button class="btn btn-sm btn-primary" disabled="disabled">
+                      <span style="font-size:14px;" data-toggle="tooltip" title="Editar" ><i class="fa fa-edit"></i></button>
+                      </a>                    
+                    </td>
+                  {% else %}
+                    <td class="tableclass1" width="1%" style="text-align:center;">                                     
+                      <a href="{{ path(namevar~'_edit', { 'id': result.id }) }}" class="btn btn-sm btn-primary">
+                      <span style="font-size:14px;" data-toggle="tooltip" title="Editar" ><i class="fa fa-edit"></i></span>
+                      </a>                    
+                    </td>
+                  {% endif %}
+
+                {% else %}
+                <td class="tableclass1" width="1%" style="text-align:center;">                                     
+                    <a href="{{ path(namevar~'_edit', { 'id': result.id }) }}" class="btn btn-sm btn-primary">
+                    <span style="font-size:14px;" data-toggle="tooltip" title="Editar" ><i class="fa fa-edit"></i></span>
+                    </a>                    
+                </td>
+                {% endif %}
+                {% endif %}
+
+                {% if delete == "true" %}
+                <td class="tableclass1" width="1%" style="text-align:center;">                                     
+                    <a href="javascript:void(0);" class="btn btn-sm btn-primary" onClick="confirmdelete('{{ path(namevar~'_delete', { 'id': result.id }) }}')" data-toggle="tooltip" title="Eliminar" ><span style="font-size:14px;" >
+                    <i class="fa fa-remove"></i></span>
+                    </a>                   
+                </td>
+                {% endif %}
+                {% if pdfone == "true" %}
+                <td class="tableclass1" width="1%" style="text-align:center;">                                     
+                    <a href="{{ path(namevar~'_generarPfd', { 'id': result.id }) }}" class="btn btn-sm btn-primary">
+                    <span style="font-size:14px;" data-toggle="tooltip" title="Ver PDF" ><i class="fa fa-file-pdf-o"></i></span>
+                    </a>                    
+                </td>
+                {% endif %}
+            </tr>
+        {% set counter1 = counter1 + 1%}
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <div class="col-lg-12">
+    <center>{{ knp_pagination_render(resultset) }}</center>
+    </div>
+    <script>
+        $('#tallModal').on('hidden', function () {
+            clearInterval(intervalo);
+        })
+        function confirmdelete(delvar){            
+            swal({
+              title: "Eliminar",
+              text: "¿Realmente desea Eliminar el registro?",
+              type: "error",
+              showCancelButton: true,
+              cancelButtonText: "Cancelar",
+              confirmButtonClass: "btn-danger",
+              confirmButtonText: "Eliminar",
+              closeOnConfirm: false
+            },
+            function(){           
+              window.location.href=delvar;
+            });
+        }
+        function confirmarchivar(delvar){            
+            swal({
+              title: "Archivar",
+              text: "¿Realmente desea Archivar el registro?",
+              type: "error",
+              showCancelButton: true,
+              cancelButtonText: "Cancelar",
+              confirmButtonClass: "btn-danger",
+              confirmButtonText: "Archivar",
+              closeOnConfirm: false
+            },
+            function(){           
+              window.location.href=delvar;
+            });
+        }
+
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip(); 
+        });
+        
+        function sendExcel(idvar){
+          document.getElementById("idvar").value = idvar;
+          document.getElementById("formExcel").submit(); 
+        }
+        {% if advancedsearch == "true" %}
+        $(function () {
+                $('#desde').datetimepicker({                    
+          locale: 'es',
+          format: 'YYYY-MM-DD',
+                });
+            });
+        $(function () {
+                $('#hasta').datetimepicker({                    
+          locale: 'es',
+          format: 'YYYY-MM-DD',
+                });
+            });
+        {% endif %}
+        function sendPdf(idvar){
+          document.getElementById("idvarpdf").value = idvar;
+          document.getElementById("formPdf").submit(); 
+        }
+
+        function validarExcel(objvar){
+          var file = objvar.files[0];
+          var tmp1 = objvar.value.split(".");
+          var boovar = false;
+
+          if(tmp1[1] != "xls" && tmp1[1] != "xlsx"){
+            boovar = true;
+          }
+
+          if(boovar == true){
+              objvar.value = "";
+              swal(
+                '',
+                'Error: El Archivo debe estar en formato Excel',
+                'warning'
+              );
+          }
+        }
+        function resetChecksProveedores(){
+          proveedores.forEach(function(currentValue,index,arr){
+            document.getElementById("list_" + index).checked = false;
+            proveedores[index] = 0;
+          })
+        }
+        function resetChecksProveedoresSub(){
+          proveedores.forEach(function(currentValue,index,arr){
+            document.getElementById("list_" + index).checked = false;
+            proveedores[index] = 0;
+          })
+        }
+        function setChecksProveedores(){
+          proveedores.forEach(function(currentValue,index,arr){
+            if(currentValue == 0){
+              document.getElementById("list_" + index).checked = false;
+            }else{
+              document.getElementById("list_" + index).checked = true;
+            }
+          })
+        }
+        function proveedorAleatorio(){
+          document.getElementById("proveedorAleatorioDiv").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br><span style="font-size:14px; color:#000000;"><b>Cargando Proveedor Aleatorio</b></span><br><br><br><br>';
+          var urlvar = '{{ url("eventos_cargarAleatorio", { "id": "1" }) }}';
+          $.ajax({
+              method: "POST",
+              url: urlvar,
+              data: { 
+                  'idvar': '1',
+                  'idEvento': window.idEventoJs,
+              },
+              dataType: 'json',
+              success: function(data){ 
+                  if(data.hasOwnProperty("response") && data.response === "success"){
+                      document.getElementById("proveedorAleatorioDiv").innerHTML = data.ganadores[0].nombre + '<br><img src="{{asset("images/proveedores/") }}' + data.ganadores[0].imagen + '" style="max-height:220px;" class="img-respnsive" ><br><br>';
+                  }else{
+                    // proveedorAleatorio();
+                    return;
+                  }
+              },
+              error: function(jqXHR, exception)
+              {
+                  // proveedorAleatorio();
+                  if(jqXHR.status === 405)
+                  {
+                      console.error("METHOD NOT ALLOWED!");
+                      
+                  }
+              }
+          });
+          $('#proveedorAleatorioModal').modal({
+                show: 'true'
+          });
+        }
+        function asociadoAleatorio(){
+          document.getElementById("asociadoAleatorioDiv").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br><span style="font-size:14px; color:#000000;"><b>Cargando Asociado Aleatorio</b></span><br><br><br><br>';
+          var urlvar = '{{ url("eventos_cargarAleatorio", { "id": "2" }) }}';
+          $.ajax({
+              method: "POST",
+              url: urlvar,
+              data: { 
+                  'idvar': '2',
+                  'idEvento': window.idEventoJs,
+              },
+              dataType: 'json',
+              success: function(data){ 
+                  if(data.hasOwnProperty("response") && data.response === "success"){
+                      document.getElementById("asociadoAleatorioDiv").innerHTML = "Asociado: " + data.ganadores[0].nombreAsociado + '<br>Nombre Droguería: ' + data.ganadores[0].nombreDrogueria + '<br>Nit: ' + data.ganadores[0].nit + '<br>Código: ' + data.ganadores[0].codigo + '<br><br><br>';
+                  }else{
+                    // asociadoAleatorio();
+                    //se implementa el mensaje de error cuando el ganador ya fue elegido previamente
+                    document.getElementById("asociadoAleatorioDiv").innerHTML = "Asociado: " + data.mensaje;
+                    return;
+                  }
+              },
+              error: function(jqXHR, exception)
+              {
+                  // asociadoAleatorio();
+                  if(jqXHR.status === 405)
+                  {
+                      console.error("METHOD NOT ALLOWED!");
+                      
+                  }
+              }
+          });
+
+          $('#asociadoAleatorioModal').modal({
+                show: 'true'
+            });
+        }
+        var counterFields = 0;
+        function addField(typeVar){
+          counterFields ++;
+          $("#completeSearchCounter").val(counterFields);
+
+          var selectedOption = $("#fieldType").prop('selectedIndex');
+          //alert(types[selectedOption]);
+
+          var selectedOption2 = $( "#fieldType option:selected" ).text();
+          var selectField = '<input id="fieldTypeAux_' + counterFields + '" name="fieldTypeAux_' + counterFields + '" type="text" class="form-control" style="width:30%" value="' + selectedOption2 + '" readonly="readonly"> <input type="hidden" name="fieldType_' + counterFields + '" id="fieldType_' + counterFields + '" value="' + fields[selectedOption] + '"> ';
+
+
+          if(types[selectedOption] == "date"){
+            var inputField = '<input id="findField_' + counterFields + '" name="findField_' + counterFields + '" type="text" class="form-control" style="width:40%" onClick="startCalendar(this, ' + counterFields + ')" onBlur="restoreButton(' + counterFields + ')"><span class="input-group-btn">';
+
+          }else{
+            var inputField = '<input id="findField_' + counterFields + '" name="findField_' + counterFields + '" type="text" class="form-control" style="width:40%" required="required"><span class="input-group-btn"> ';
+          }
+
+          $( "#setFieldDiv" ).append( '<div id="setFieldDivLine_' + counterFields + '" class="input-group" style="margin-bottom:6px; background-color:#E5E5E5; ">' + selectField + '  <select id="fieldQueryAux_' + counterFields + '" name="fieldQueryAux_' + counterFields + '" class="form-control" style="width:30%"><option value="CONTIENE">CONTIENE</option> <option value="ESIGUAL">ES IGUAL</option> <option value="NOESIGUAL">NO ES IGUAL</option> <option value="MENORQUE">MENOR QUE</option> <option value="MAYORQUE">MAYOR QUE</option> </select> ' + inputField + ' <button id="buttonFields_' + counterFields + '" class="btn btn-primary" type="button" onClick="removeField(' + counterFields + ')"><i class="fa fa-minus-square" aria-hidden="true"></i></button>    </span>  </div>' );
+
+          //var selectedOption = $( "#fieldType option:selected" ).text();
+          if(types[selectedOption] == "date"){
+            registrarDateTime(counterFields);
+          }
+          
+          $('#fieldTypeAux_' + counterFields + ' option:eq(' + selectedOption + ')').attr('selected', 'selected')
+        }
+        function removeField(idvar){
+          $( "#setFieldDivLine_" + idvar ).remove();
+        }
+        function registrarDateTime(counterFields){
+          //alert(counterFields);
+          $('#findField_' + counterFields).datetimepicker({                    
+          locale: 'es',
+          format: 'YYYY-MM-DD',
+                });
+        }
+        function startCalendar(objvar, counterFields){
+          $('#buttonFields_' + counterFields).hide();
+          $('#' + objvar.id).datetimepicker('show');
+        }
+        function restoreButton(counterFields){
+          $('#buttonFields_' + counterFields).show();
+        } 
+
+        function setImagenGanadores(imageVar){
+          var imageUrl = "{{ asset('images/eventos/') }}" + imageVar;
+           $('#ganadoresDiv').css('background-image', "url(" + imageUrl + ")");
+        }
+        </script>
+{% endblock %}

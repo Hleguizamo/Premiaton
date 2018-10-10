@@ -1,0 +1,216 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div style="max-width: 30%; margin: 0px auto;">
+    {% if namevar == "proveedoresusuarios" %}
+    <div class="downloadpost" style="font-size:24px;">Editar contraseña</div> 
+    {% else %}
+    <div class="downloadpost" style="font-size:24px;">Editar {{ titulo }}</div>	
+    {% endif %}
+
+    {{ form_start(edit_form) }}
+        {{ form_widget(edit_form) }}
+        {% if imagenvar is defined %}
+            <input type="hidden" name="imagenvar" id="imagenvar" value="{{ imagenvar }}">
+        {% endif %} 
+        
+        {% if adjunto1 is defined %}
+            <input type="hidden" name="adjunto1" id="adjunto1" value="{{ adjunto1 }}">
+        {% endif %} 
+
+        {% if adjunto2 is defined %}
+            <input type="hidden" name="adjunto2" id="adjunto2" value="{{ adjunto2 }}">
+        {% endif %} 
+
+        {% if adjunto3 is defined %}
+            <input type="hidden" name="adjunto3" id="adjunto3" value="{{ adjunto3 }}">
+        {% endif %} 
+
+        {% if adjunto4 is defined %}
+            <input type="hidden" name="adjunto4" id="adjunto4" value="{{ adjunto4 }}">
+        {% endif %} 
+
+        {% if adjunto5 is defined %}
+            <input type="hidden" name="adjunto5" id="adjunto5" value="{{ adjunto5 }}">
+        {% endif %} 
+
+        {% if adjunto6 is defined %}
+            <input type="hidden" name="adjunto6" id="adjunto6" value="{{ adjunto6 }}">
+        {% endif %} 
+
+        {% if adjunto7 is defined %}
+            <input type="hidden" name="adjunto7" id="adjunto7" value="{{ adjunto7 }}">
+        {% endif %} 
+
+        {% if adjunto8 is defined %}
+            <input type="hidden" name="adjunto8" id="adjunto8" value="{{ adjunto8 }}">
+        {% endif %} 
+
+        {% if adjunto9 is defined %}
+            <input type="hidden" name="adjunto9" id="adjunto9" value="{{ adjunto9 }}">
+        {% endif %} 
+
+        {% if adjunto10 is defined %}
+            <input type="hidden" name="adjunto10" id="adjunto10" value="{{ adjunto10 }}">
+        {% endif %} 
+
+        
+        <input type="submit" value="Guardar cambios" class="{{ button_css|default("btn btn-primary") }}" />
+    {{ form_end(edit_form) }}
+
+    <div>&nbsp;</div>
+    <div>
+        <a href="javascript:history.back(-1);" class="{{ button_css|default("btn btn-link") }}">
+		<i class="fa fa-long-arrow-left"></i> Volver
+		</a>		
+	</div>
+    <div>&nbsp;</div>	
+    </div>
+    {% if setMes is defined %}
+    <script type="text/javascript">
+        //setMes();
+        function setMes(){          
+          document.getElementById("eventos_fecha_month").options.length=0;
+          document.getElementById("eventos_fechaFin_month").options.length=0;
+          var min = 1,
+              max = 12,
+              select = document.getElementById('eventos_fecha_month'),
+              select2 = document.getElementById('eventos_fechaFin_month');
+
+          for (var i = min; i<=max; i++){
+              var mes;
+              switch(i){
+                case 1: mes = 'Ene'; break;
+                case 2: mes = 'Feb'; break;
+                case 3: mes = 'Mar'; break;
+                case 4: mes = 'Abr'; break;
+                case 5: mes = 'May'; break;
+                case 6: mes = 'Jun'; break;
+                case 7: mes = 'Jul'; break;
+                case 8: mes = 'Ago'; break;
+                case 9: mes = 'Sep'; break;
+                case 10: mes = 'Oct'; break;
+                case 11: mes = 'Nov'; break;
+                case 12: mes = 'Dic'; break;
+              }
+              var opt = document.createElement('option');
+              opt.value = i;
+              opt.innerHTML = mes;
+
+              var opt2 = document.createElement('option');
+              opt2.value = i;
+              opt2.innerHTML = mes;
+
+              select.appendChild(opt);
+              select2.appendChild(opt2);
+          }
+        }        
+    </script>
+    {% endif %}
+    <script type="text/javascript">
+      function validarformato(objvar){
+          var file = objvar.files[0];
+          var tmp1 = objvar.value.split(".");
+          var boovar = false;
+
+          if(file.size < 50000){
+            boovar = true;
+          }
+
+          if(file.size > 2048000){
+            boovar = true;
+          }
+
+          if(tmp1[1] != "jpg" && tmp1[1] != "png"){
+            boovar = true;
+          }
+
+          if(boovar == true){
+              objvar.value = "";
+              swal(
+                '',
+                'Error: La imágen debe estar en formato JPG ó PNG y para su mejor enfoque debe ser cuadrada, el mínimo de tamaño permitido es 50 Kb y el máximo es de 2 Mb',
+                'warning'
+              )
+          }
+        }
+        function validarformatoImagen(objvar){
+          var file = objvar.files[0];
+          var tmp1 = objvar.value.split(".");
+          var boovar = false;
+
+          if(file.size < 20000){
+            boovar = true;
+          }
+
+          if(file.size > 2048000){
+            boovar = true;
+          }
+
+          if(tmp1[1] != "jpg" && tmp1[1] != "png"){
+            boovar = true;
+          }
+
+          if(boovar == true){
+              objvar.value = "";
+              swal(
+                '',
+                'Error: La imágen debe estar en formato JPG ó PNG, el mínimo de tamaño permitido es 20 Kb y el máximo es de 2 Mb',
+                'warning'
+              )
+          }
+        }
+        function validarformato3(objvar){
+          var file = objvar.files[0];
+          var tmp1 = objvar.value.split(".");
+          var boovar = false;
+
+          if(file.size < 20000){
+            boovar = true;
+          }
+
+          if(file.size > 2048000){
+            boovar = true;
+          }
+
+          if(tmp1[1] != "jpg" && tmp1[1] != "png"){
+            boovar = true;
+          }
+
+          if(boovar == true){
+              objvar.value = "";
+              swal(
+                '',
+                'Error: La imágen debe estar en formato JPG ó PNG y las medidas de la imágen deben ser: 200px X 152px, el mínimo de tamaño permitido es 20 Kb y el máximo es de 2 Mb',
+                'warning'
+              )
+          }
+        }
+        function validarformato4(objvar){
+          var file = objvar.files[0];
+          var tmp1 = objvar.value.split(".");
+          var boovar = false;
+
+          if(file.size < 50000){
+            boovar = true;
+          }
+
+          if(file.size > 2048000){
+            boovar = true;
+          }
+
+          if(tmp1[1] != "jpg" && tmp1[1] != "png"){
+            boovar = true;
+          }
+
+          if(boovar == true){
+              objvar.value = "";
+              swal(
+                '',
+                'Error: La imágen debe estar en formato JPG ó PNG y para su mejor enfoque debe ser cuadrada, el mínimo de tamaño permitido es 50 Kb y el máximo es de 2 Mb, el tamaño sugerido es 500px X 500px',
+                'warning'
+              )
+          }
+        }
+    </script>
+{% endblock %}

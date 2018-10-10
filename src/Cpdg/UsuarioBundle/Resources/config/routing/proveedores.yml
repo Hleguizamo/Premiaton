@@ -1,0 +1,27 @@
+proveedoresusr_index:
+    path:     /page/{page}
+    defaults: { _controller: "CpdgUsuarioBundle:Proveedores:index" }
+    methods:  [GET, POST]
+proveedoresusr_show:
+    path:     /{id}/show
+    defaults: { _controller: "CpdgUsuarioBundle:Proveedores:show" }
+    methods:  [GET, POST]
+
+proveedoresusr_new:
+    path:     /new
+    defaults: { _controller: "CpdgUsuarioBundle:Proveedores:new" }
+    methods:  [GET, POST]
+
+proveedoresusr_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "CpdgUsuarioBundle:Proveedores:edit" }
+    methods:  [GET, POST]
+
+proveedoresusr_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "CpdgUsuarioBundle:Proveedores:delete" }
+    methods:  [GET, POST]
+proveedoresusr_exportarExcel:
+    path:     /exportarExcel
+    defaults: { _controller: "CpdgUsuarioBundle:Proveedores:exportarExcel" }
+    methods:  [GET, POST]

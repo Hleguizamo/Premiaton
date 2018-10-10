@@ -1,0 +1,24 @@
+ciudades_index:
+    path:     /
+    defaults: { _controller: "CpdgAdministradorBundle:Ciudades:index" }
+    methods:  [GET, POST]
+
+ciudades_show:
+    path:     /{id}/show
+    defaults: { _controller: "CpdgAdministradorBundle:Ciudades:show" }
+    methods:  [GET, POST]
+
+ciudades_new:
+    path:     /new
+    defaults: { _controller: "CpdgAdministradorBundle:Ciudades:new" }
+    methods:  [GET, POST]
+
+ciudades_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "CpdgAdministradorBundle:Ciudades:edit" }
+    methods:  [GET, POST]
+
+ciudades_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "CpdgAdministradorBundle:Ciudades:delete" }
+    methods:  [GET, POST]

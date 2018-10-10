@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}PREMIATÓN{% endblock %}</title>       
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">        
+        
+        
+                        
+        <!-- <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}">
+        <script type="text/javascript" src="{{ asset('js/jquery-2.1.0.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script> -->
+        <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+        <script src="{{ asset('js/jquery.min.js') }}"></script>
+        <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('js/sweet-alert.js') }}"></script>
+        <link rel="stylesheet" href="{{ asset('css/sweet-alert.css') }}">  
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/coopidrogas.css') }}"> 
+        <script src="{{ asset('js/moment-with-locales.js') }}"></script>
+        <script src="{{ asset('js/bootstrap-datetimepicker.js') }}"></script>
+
+        <script type='text/javascript'>//<![CDATA[
+        $(window).load(function(){    
+            $(document).ready(function () {
+                $("nav").find("li").on("click", "a", function () {
+                    $('.navbar-collapse.in').collapse('hide');
+                });
+            });
+        });//]]> 
+        </script>
+        {% set colorbasemenu = "#A0A0A0" %}
+        {% set colormenu1 = "#95C11F" %}
+        {% set colormenu2 = "#662483" %}
+        {% set colormenu3 = "#E94E1B" %}
+        {% set colormenu4 = "#3AAA35" %}
+        {% set colormenu5 = "#3AAA35" %}
+        {% set colormenu6 = "#F39200" %}
+        {% set colormenu7 = "#E6007E" %}
+
+        {% if namevar == "eventos" %}
+            {% set coloractual = colormenu1 %}
+        {% elseif namevar == "eventosusr" %}
+            {% set coloractual = colormenu1 %}
+        {% elseif namevar == "subeventos" %}
+            {% set coloractual = colormenu1 %}
+        {% elseif namevar == "proveedores" %}
+            {% set coloractual = colormenu2 %}
+        {% elseif namevar == "proveedoresusuariosusr" %}
+            {% set coloractual = colormenu2 %}
+        {% elseif namevar == "asociados" %}
+            {% set coloractual = colormenu3 %}
+        {% elseif namevar == "administrador" %}
+            {% set coloractual = colormenu4 %}
+        {% elseif namevar == "administradorregional" %}
+            {% set coloractual = colormenu5 %}
+        {% elseif namevar == "eventosempleados" %}
+            {% set coloractual = colormenu6 %}
+        {% elseif namevar == "empleados" %}
+            {% set coloractual = colormenu6 %}
+        {% elseif namevar == "logs" %}
+            {% set coloractual = colormenu7 %}
+        {% else %}
+            {% set coloractual = colorbasemenu %}
+        {% endif %}
+
+        <style type="text/css">
+        
+            .btn-primary, .btn-primary:link, .btn-primary:visited {
+                background-color: {{ coloractual }};
+                color: #ffffff;
+                border: 0px;
+                font-size: 13px;
+            }
+             
+            .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:active:focus, .btn-primary.active, .open > .dropdown-toggle.btn-primary , .disabled{
+                background-color: #B2B1B5;
+                border: 0px;
+                color: #ffffff;
+                font-size: 13px;
+            }
+             
+            .btn-primary:active, .btn-primary.active {
+                background-color: {{ coloractual }};
+                box-shadow: none;
+                border: 0px;
+                color: #ffffff;
+                font-size: 13px;
+            } 
+            
+            
+        </style>
+        
+    </head>
+    <body background="{{ asset('images/bg1.png') }}" style="height: 100%">           
+            {% block body %}                      
+              {% block main %}                        
+              
+              {% endblock %}
+            {% endblock %}
+    </body>
+</html>

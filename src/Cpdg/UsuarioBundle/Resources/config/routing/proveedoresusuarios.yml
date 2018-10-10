@@ -1,0 +1,29 @@
+proveedoresusuariosusr_index:
+    path:     /
+    defaults: { _controller: "CpdgUsuarioBundle:ProveedoresUsuarios:index" }
+    methods:  [GET, POST]
+
+proveedoresusuariosusr_show:
+    path:     /{id}/show
+    defaults: { _controller: "CpdgUsuarioBundle:ProveedoresUsuarios:show" }
+    methods:  [GET, POST]
+
+proveedoresusuariosusr_new:
+    path:     /new
+    defaults: { _controller: "CpdgUsuarioBundle:ProveedoresUsuarios:new" }
+    methods:  [GET, POST]
+
+proveedoresusuariosusr_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "CpdgUsuarioBundle:ProveedoresUsuarios:edit" }
+    methods:  [GET, POST]
+proveedoresusuariosusr_updateContrasena:
+    path:     /{id}/updateContrasena
+    defaults: { _controller: "CpdgUsuarioBundle:ProveedoresUsuarios:updateContrasena" }
+    methods:  [GET, POST]
+
+proveedoresusuariosusr_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "CpdgUsuarioBundle:ProveedoresUsuarios:delete" }
+    methods:  [GET, POST]
+

@@ -1,0 +1,7 @@
+<td>{{ result.nombre }}</td>
+<td align="center">{{ result.fechaInicio | date("Y-m-d") }}</td>
+<td align="center">{{ result.horaInicio | date("H:i") }}</td>
+<td align="center">{{ result.fechaFin | date("Y-m-d") }}</td>
+<td align="center">{{ result.horaFin | date("H:i") }}</td>
+<td align="center" width="1%"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#inscripcionesModal" onclick="loadInscripciones({{ result.id }});"><i class="fa fa-child" aria-hidden="true"></i></button></td>
+<td align="center" width="1%"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ganadoresModal" onclick="loadGanadores({{ result.id }});"><i class="fa fa-list-ul" aria-hidden="true"></i></button></td>

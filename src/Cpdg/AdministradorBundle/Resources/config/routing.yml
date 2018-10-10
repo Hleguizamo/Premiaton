@@ -1,0 +1,42 @@
+cpdg_administrador_administrador:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/administrador.yml"
+    prefix:   /administrador
+cpdg_administrador_administradorregional:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/administradorregional.yml"
+    prefix:   /administradorregional
+cpdg_administrador_inicio:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/inicio.yml"
+    prefix:   /
+cpdg_administrador_administrador:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/administrador.yml"
+    prefix:   /administrador
+cpdg_administrador_ciudades:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/ciudades.yml"
+    prefix:   /ciudades
+cpdg_administrador_departamentos:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/departamentos.yml"
+    prefix:   /departamentos
+cpdg_administrador_eventos:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/eventos.yml"
+    prefix:   /eventos
+cpdg_administrador_subeventos:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/subeventos.yml"
+    prefix:   /subeventos
+cpdg_administrador_eventosempleados:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/eventosempleados.yml"
+    prefix:   /eventosempleados
+cpdg_administrador_proveedores:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/proveedores.yml"
+    prefix:   /proveedores
+cpdg_administrador_proveedoresusuarios:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/proveedoresusuarios.yml"
+    prefix:   /proveedoresusuarios
+cpdg_administrador_asociados:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/asociados.yml"
+    prefix:   /asociados
+cpdg_administrador_empleados:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/empleados.yml"
+    prefix:   /empleados
+cpdg_administrador_logs:
+    resource: "@CpdgAdministradorBundle/Resources/config/routing/logs.yml"
+    prefix:   /logs

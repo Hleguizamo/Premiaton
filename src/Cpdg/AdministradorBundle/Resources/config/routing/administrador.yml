@@ -1,0 +1,28 @@
+administrador_index:
+    path:     /
+    defaults: { _controller: "CpdgAdministradorBundle:Administrador:index" }
+    methods:  [GET, POST]
+
+administrador_show:
+    path:     /{id}/show
+    defaults: { _controller: "CpdgAdministradorBundle:Administrador:show" }
+    methods:  [GET, POST]
+
+administrador_new:
+    path:     /new
+    defaults: { _controller: "CpdgAdministradorBundle:Administrador:new" }
+    methods:  [GET, POST]
+
+administrador_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "CpdgAdministradorBundle:Administrador:edit" }
+    methods:  [GET, POST]
+administrador_updateContrasena:
+    path:     /{id}/updateContrasena
+    defaults: { _controller: "CpdgAdministradorBundle:Administrador:updateContrasena" }
+    methods:  [GET, POST]
+
+administrador_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "CpdgAdministradorBundle:Administrador:delete" }
+    methods:  [GET, POST]

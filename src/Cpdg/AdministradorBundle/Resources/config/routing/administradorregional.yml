@@ -1,0 +1,28 @@
+administradorregional_index:
+    path:     /
+    defaults: { _controller: "CpdgAdministradorBundle:AdministradorRegional:index" }
+    methods:  [GET, POST]
+
+administradorregional_show:
+    path:     /{id}/show
+    defaults: { _controller: "CpdgAdministradorBundle:AdministradorRegional:show" }
+    methods:  [GET, POST]
+
+administradorregional_new:
+    path:     /new
+    defaults: { _controller: "CpdgAdministradorBundle:AdministradorRegional:new" }
+    methods:  [GET, POST]
+
+administradorregional_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "CpdgAdministradorBundle:AdministradorRegional:edit" }
+    methods:  [GET, POST]
+administradorregional_updateContrasena:
+    path:     /{id}/updateContrasena
+    defaults: { _controller: "CpdgAdministradorBundle:AdministradorRegional:updateContrasena" }
+    methods:  [GET, POST]
+
+administradorregional_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "CpdgAdministradorBundle:AdministradorRegional:delete" }
+    methods:  [GET, POST]

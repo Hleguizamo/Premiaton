@@ -1,0 +1,30 @@
+<td>{{ result.idCentro.centro }}</td>
+<td>{{ result.nombre }}</td>
+<td align="center">{{ result.fechaInicio | date("Y-m-d") }}</td>
+<td align="center">{{ result.horaInicio | date("H:i") }}</td>
+<td align="center">{{ result.fechaFin | date("Y-m-d") }}</td>
+<td align="center">{{ result.horaFin | date("H:i") }}</td>
+<td align="center">{{ result.periodicidad }} Minutos</td>
+<td align="center">{{ result.numeroGanadores }}</td>
+<td align="center">
+{% if result.estado == 1 %}
+Activo
+{% elseif result.estado == 9 %}
+<span class="blink_me" style="font-weight: bold; color:#660000 ;">En curso</span>
+{% elseif result.estado == 5 %}
+<span class="blink_me" style="font-weight: bold; color:#660000 ;">En Pausa</span>
+{% else %}
+Evento Terminado
+{% endif %}
+</td>
+<td align="center">{% if result.imagen == "" %}No cargada{% else %}<img src="{{ asset('images/eventos/') }}{{result.imagen}}" class="img-responsive" alt="" width="75">{% endif %}</td>
+
+
+
+<td align="center" width="1%"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ganadoresEmpleadosModal" onclick="loadGanadoresEmpleados({{ result.id }});"><i class="fa fa-list-ul" aria-hidden="true"></i></button></td>
+
+<td align="center" width="1%"><a class="btn btn-primary" href="{{ path('eventosempleados_pantallaGanadores', { 'id': result.id }) }}" target="_blank"><i class="fa fa-desktop" aria-hidden="true"></i></a></td>
+
+<!--
+<td align="center" width="1%"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tallModal" onclick="setImagenGanadores('{{ result.imagen }}'); "><i class="fa fa-desktop" aria-hidden="true"></i></button></td> -->
+

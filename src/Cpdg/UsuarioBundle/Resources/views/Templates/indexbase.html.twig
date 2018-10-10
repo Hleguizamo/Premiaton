@@ -1,0 +1,940 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {% if completeSearch is defined %}
+        <script type="text/javascript">
+          var types = new Array();
+          var fields  = new Array();
+        </script>
+        <div id="realLoadingDiv" style="position: absolute; background-color: #FFFFFF; width: 300px; height: 20px; z-index: 99999999;"><img src="{{ asset("images/loader.gif") }}"> &nbsp; &nbsp; Cambiando estado de proveedor</div>
+        <script type="text/javascript">
+          $("#realLoadingDiv").css('left', -500);
+          $("#realLoadingDiv").css('top', 0);
+        </script>
+        <!-- Modal completeSearch -->
+          <div id="completeSearchDiv" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title"><i class="fa fa-search-plus" aria-hidden="true"></i> Búsqueda Avanzada</h4>
+                </div>
+                <div class="modal-body">
+                  <form class="uk-panel uk-panel-box uk-form" method="POST" action="{{ path(namevar~'_index') }}" id="buscarAdvanzadoForm" autocomplete="off">
+                    <div class='input-group' id='mainBuscar'>                      
+                      <select id="fieldType" class="form-control" style="height:46px;">
+                      <!-- <option value="0">Todos</option>
+                      <script type="text/javascript">
+                            types.push('text');
+                      </script> -->
+                      {% set counterFields = 1 %}
+                      {% set counterFields0 = 0 %}
+                      {% for campos in completeSearchFields["etiquetas"] %}
+
+                        <option value="{{ counterFields }}">{{ campos }}</option>
+                        <script type="text/javascript">
+                            types.push('{{ completeSearchFields["tipos"][counterFields0] }}');
+                            fields.push('{{ completeSearchFields["campos"][counterFields0] }}');
+                        </script>
+                      {% set counterFields0 = counterFields0 + 1 %}
+                      {% set counterFields = counterFields + 1 %}                      
+                      {% endfor %}
+                      </select>
+
+                      <span class="input-group-addon">                        
+                        <button type="button" class="btn btn-primary" onclick="addField();"><i class="fa fa-plus-square" aria-hidden="true"></i></button>
+                      </span>                      
+                    </div>
+                    <div id="setFieldDiv"><p>&nbsp;</p></div>                    
+                    <label>&nbsp;</label><br>
+                    <div style="text-align: right;">
+                    <input type="hidden" name="completeSearchCounter" id="completeSearchCounter" value="123">
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+    {% endif %}
+
+    {% if loadFile is defined %}
+    <!-- Modal Upload -->
+    <div id="uploadModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal Upload -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Cargar Lista de Usuarios</h4>
+          </div>
+          <div class="modal-body">
+              {{ form_start(form, {'action': 'loadFile'}) }}
+                    {{ form_widget(form) }}
+                    <input type="submit" class="btn btn-primary" value="Ingresar nuevo"></input>
+                {{ form_end(form) }}
+          </div>
+
+          <div class="modal-footer" style="text-align:right;">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    {% endif %}
+
+    {% if proveedores is defined %}
+    <script type="text/javascript">
+      
+      var counterInscripciones = 0;
+      function resetInscripciones(){
+        var table = document.getElementById("tablaUsuarios");
+        for(x = 0; x < counterInscripciones; x++ ){
+            table.deleteRow(2);
+        }
+      }
+      function confirmdeleted(idVar, idEvento){         
+            swal({
+              title: "Eliminar",
+              text: "¿Realmente desea Eliminar La Droguería?",
+              type: "error",
+              showCancelButton: true,
+              cancelButtonText: "Cancelar",
+              confirmButtonClass: "btn-danger",
+              confirmButtonText: "Eliminar",
+              closeOnConfirm: true
+            },
+            function(){           
+              eliminarDrogueria(idVar, idEvento);
+            });
+        }
+      window.courrentIdVar = 0;
+      function loadInscripciones(idVar){
+        window.courrentIdVar = idVar;
+        resetInscripciones();
+        document.getElementById("loadingDiv2").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Cargando Droguerías Inscritas';
+
+        var urlvar = '{{ url("eventosusr_cargarInscripciones", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': idVar
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response") && data.response === "success"){
+                    if(data.hasOwnProperty("inscripciones")){
+                      var table = document.getElementById("tablaUsuarios");
+                      counterInscripciones = data.total;
+                      var y = 0;
+                      for(var x = 0; x < data.total; x++){                             
+                       // proveedores[data.proveedores[x].id] = 1;
+                        y = x+2;
+                        var row = table.insertRow(y);
+                        var cell_1 = row.insertCell(0);
+                        var cell_2 = row.insertCell(1);
+                        var cell_3 = row.insertCell(2);
+                        var cell_4 = row.insertCell(3);
+                        var cell_5 = row.insertCell(4);
+                        var cell_6 = row.insertCell(5);
+                        var cell_7 = row.insertCell(6);
+                        var cell_8 = row.insertCell(7);
+                        var cell_9 = row.insertCell(8);
+                        var cell_10 = row.insertCell(9);
+                        var cell_11 = row.insertCell(10);
+                        var cell_12 = row.insertCell(11);
+                        var cell_13 = row.insertCell(12);
+
+                        cell_1.innerHTML = x+1;
+                        cell_2.innerHTML = data.inscripciones[x].idSorteo;
+                        cell_3.innerHTML = data.inscripciones[x].proveedor;
+                        cell_4.innerHTML = data.inscripciones[x].nit;
+                        cell_5.innerHTML = data.inscripciones[x].asociado;
+                        cell_6.innerHTML = data.inscripciones[x].codigo;
+                        cell_7.innerHTML = data.inscripciones[x].centro;
+                        cell_8.innerHTML = data.inscripciones[x].nombreDrogueria;
+                        cell_9.innerHTML = data.inscripciones[x].ciudad;
+                        cell_10.innerHTML = data.inscripciones[x].departamento;
+                        cell_11.innerHTML = data.inscripciones[x].fecha;
+                        cell_12.innerHTML = data.inscripciones[x].hora;
+                        cell_13.innerHTML = '<center><a href="javascript:void(0);" class="btn btn-sm btn-primary" onClick="confirmdeleted(' + data.inscripciones[x].id + ', ' + window.courrentIdVar + ')" data-toggle="tooltip" title="Eliminar" ><span style="font-size:14px;" ><i class="fa fa-remove"></i></span></a></center>';
+                        document.getElementById("botonInscribir").disabled = false;
+                        /*
+                        cell_9.innerHTML = '<center><a href="javascript:void(0);" class="btn btn-sm btn-primary" nClick="confirmdeleted(' + data.id[x]. + ', ' + window.courrentIdVar + ')" data-toggle="tooltip" title="Eliminar" ><span style="font-size:14px;" ><i class="fa fa-remove"></i></span></a></center>';
+                        */
+                      } 
+                      document.getElementById("loadingDiv2").innerHTML = '';                           
+                    }else{
+                        console.log("POSTS NOT FOUND");
+                    }
+                }else{
+                  counterInscripciones = 0;
+                  loadInscripciones(idVar);
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                counterInscripciones = 0;
+                loadInscripciones(idVar);
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+
+      //--------Ganadores
+
+      var counterGanadores = 0;
+      function resetGanadores(){
+        var table = document.getElementById("tablaGanadores");
+        for(x = 0; x < counterGanadores; x++ ){
+            table.deleteRow(2);
+        }
+      }
+      
+      function loadGanadores(idVar){
+        resetGanadores();
+        document.getElementById("loadingDiv3").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Cargando Ganadores';
+        var urlvar = '{{ url("eventosusr_cargarGanadores", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': idVar
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response") && data.response === "success"){
+                    if(data.hasOwnProperty("ganadores")){
+                      var table = document.getElementById("tablaGanadores");
+                      counterGanadores = data.total;
+                      var y = 0;
+                      for(var x = 0; x < data.total; x++){                             
+                       // proveedores[data.proveedores[x].id] = 1;
+                        y = x+2;
+                        var row = table.insertRow(y);
+                        var cell_1 = row.insertCell(0);
+                        var cell_2 = row.insertCell(1);
+                        var cell_3 = row.insertCell(2);
+                        var cell_4 = row.insertCell(3);
+                        var cell_5 = row.insertCell(4);
+                        var cell_6 = row.insertCell(5);
+                        var cell_7 = row.insertCell(6);
+                        var cell_8 = row.insertCell(7);
+                        var cell_9 = row.insertCell(8);
+
+                        cell_1.innerHTML = x+1;
+                        cell_2.innerHTML = data.ganadores[x].idSorteo;
+                        cell_3.innerHTML = data.ganadores[x].proveedor;
+                        cell_4.innerHTML = data.ganadores[x].nit;
+                        cell_5.innerHTML = data.ganadores[x].asociado;
+                        cell_6.innerHTML = data.ganadores[x].codigo;
+                        cell_7.innerHTML = data.ganadores[x].nombreDrogueria;
+                        cell_8.innerHTML = data.ganadores[x].fecha;
+                        cell_9.innerHTML = data.ganadores[x].hora;
+                      } 
+                      document.getElementById("loadingDiv3").innerHTML = '';                           
+                    }else{
+                        console.log("POSTS NOT FOUND");
+                    }
+                }else{
+                  loadGanadores();
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                loadGanadores();
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+      function inscribirDrogueria(){
+        if(document.getElementById("addcodigo").value == "" || document.getElementById("addcodigo").value == "0"){
+          swal(
+                '',
+                'Error: Debe escribir un número de código para agregar',
+                'warning'
+              );
+              document.getElementById("addcodigo").value = "";
+              document.getElementById("addcodigo").focus();
+          return; 
+        }
+        document.getElementById("botonInscribir").disabled = true;
+        document.getElementById("loadingDivAdd").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Inscribiendo Droguería';
+        var urlvar = '{{ url("eventosusr_inscribirDrogueria", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': window.courrentIdVar,
+                'idProveedor': '{{ app.user.id }}',
+                'codigoAsociado': document.getElementById("addcodigo").value,
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response")){
+                    //alert(data.temp);
+                    //alert(data.response);
+                    switch(data.response){
+                      case "desconocido": swal("","El código de droguería no se encuentra registrado","warning"); 
+                      document.getElementById("botonInscribir").disabled = false;  break;
+                      case "success": loadInscripciones(window.courrentIdVar); break;
+                      case "inscrito": swal("","Ya ha inscrito esta droguería","warning"); 
+                      document.getElementById("botonInscribir").disabled = false;  break;
+                      case "nocentro": swal("","La Droguería no pertenece al centro del Evento","warning"); 
+                      document.getElementById("botonInscribir").disabled = false;  break;
+                      case "eventocerrado": swal("","El evento ya ha terminado y las incripciones han terminado.","warning"); 
+                      document.getElementById("botonInscribir").disabled = false;  break;
+                    }
+                    document.getElementById("addcodigo").value = "";
+                    document.getElementById("loadingDivAdd").innerHTML = '';
+                }else{
+                  //alert("envio 1");
+                  inscribirDrogueria();
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                //alert("envio 2");
+                inscribirDrogueria();
+                return;
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+
+      function eliminarDrogueria(idvar, idEvento){
+
+        document.getElementById("loadingDiv2").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Eliminando Droguería';
+        var urlvar = '{{ url("eventosusr_eliminarDrogueria", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': window.courrentIdVar,
+                'idvar': idvar,
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response")){
+                    //alert(data.tempvar);
+                    switch(data.response){
+                      case "ganador": swal("","La droguería no se puede eliminar ya que ha sido ganadora del evento","warning"); break;
+                      case "success": loadInscripciones(window.courrentIdVar); break;
+                    }                    
+                    document.getElementById("loadingDiv2").innerHTML = '';
+                }else{
+                  eliminarDrogueria(idvar, idEvento);
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                eliminarDrogueria(idvar, idEvento);
+                return;
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+    </script>
+    <style type="text/css">
+    .modal.modal-wide .modal-dialog {
+      width: 98%;
+    }
+    .modal-wide .modal-body {
+      
+    }
+
+    #tallModal .modal-body #inscripcionesModal { margin-bottom: 0px; }
+</style>
+
+    <!-- Modal Inscripciones -->
+    <div id="inscripcionesModal" class="modal modal-wide fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal Upload -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"><i class="fa fa-child" aria-hidden="true"></i> Lista de Droguerías Asociadas al Evento</h4>
+          </div>
+          <div class="modal-body">
+              <div class="alert alert-success">
+              <label>Para agregar una nueva droguería ingrese el código: </label>                      
+              <input type='number' class="form-control" style="height:32px; width:300px;" value="" id="addcodigo" name="addcodigo" required="required" />
+              <br><div id="loadingDivAdd"></div>
+              <button id="botonInscribir" type="button" class="btn btn-primary" onclick="inscribirDrogueria();">Inscribir Droguería</button>
+              </div>
+              <br>
+              <table id="tablaUsuarios" class="table table-bordered table-condensed table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th align="center" colspan="13"><center>DROGUERIAS INSCRITAS <div id="loadingDiv2"><i class="fa fa-spinner" aria-hidden="true"></i></div></center></th>
+                  </tr>
+                  <tr>
+                    <th align="center">#</th>
+                    <th align="center">Sorteo</th>
+                    <th align="center">Proveedor</th>
+                    <th align="center">Nit</th>
+                    <th align="center">Asociado</th>
+                    <th align="center">Código</th>
+                    <th align="center">Centro</th>
+                    <th align="center">Nombre Droguería</th>
+                    <th align="center">Ciudad</th>
+                    <th align="center">Departamento</th>
+                    <th align="center">Fecha</th>
+                    <th align="center">Hora</th>
+                    <th align="center">Eliminar</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                    <td colspan="13"></td>
+                  </tr>
+
+                </tbody>
+              </table>
+          </div>
+
+          <div class="modal-footer" style="text-align:right;">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal Ganadores -->
+    <div id="ganadoresModal" class="modal modal-wide fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal Ganadores -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"><i class="fa fa-list-ul" aria-hidden="true"></i> Lista de Ganadores del Evento</h4>
+          </div>
+          <div class="modal-body">
+              <table id="tablaGanadores" class="table table-bordered table-condensed table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th align="center" colspan="9"><center>GANADORES <div id="loadingDiv3"><i class="fa fa-spinner" aria-hidden="true"></i></div></center></th>
+                  </tr>
+                  <tr>
+                    <th align="center">#</th>
+                    <th align="center">Sorteo</th>
+                    <th align="center">Proveedor</th>
+                    <th align="center">Nit</th>
+                    <th align="center">Asociado</th>
+                    <th align="center">Código</th>
+                    <th align="center">Nombre Droguería</th>
+                    <th align="center">Fecha</th>
+                    <th align="center">Hora</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                    <td colspan="9"></td>
+                  </tr>
+
+                </tbody>
+              </table>
+          </div>
+
+          <div class="modal-footer" style="text-align:right;">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% endif %}
+
+    {% if advancedsearch == "true" %}
+        <!-- Modal Búsqueda Avanzada -->
+          <div id="busquedaAvanzadaModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title"><i class="fa fa-search-plus" aria-hidden="true"></i> Búsqueda Avanzada</h4>
+                </div>
+                <div class="modal-body">
+                  <form class="uk-panel uk-panel-box uk-form" method="POST" action="{{ path(namevar~'_index') }}" id="buscarAdvanzadoForm" autocomplete="off">
+                    <label>Desde: </label>
+                    <div class='input-group date' id='desde' >
+                      
+                      <input type='text' class="form-control" style="height:32px;" value="{{ desde }}" name="desde" required />
+                      <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                    </div>
+
+                    <label>Hasta: </label>
+                    <div class='input-group date' id='hasta'>
+                      
+                      <input type='text' class="form-control" style="height:32px;" value="{{ hasta }}" name="hasta" required />
+                      <span class="input-group-addon" >
+                        <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                    </div>
+                    <label>&nbsp;</label><br>
+
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+    {% endif %}
+    {% if advancedsearch == "trueforo" %}
+        <!-- Modal Búsqueda Avanzada -->
+          <div id="busquedaAvanzadaModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title"><i class="fa fa-search-plus" aria-hidden="true"></i> Búsqueda Avanzada</h4>
+                </div>
+                <div class="modal-body">
+                  <form class="uk-panel uk-panel-box uk-form" method="POST" action="{{ path(namevar~'_index') }}" id="buscarAdvanzadoForm" autocomplete="off">
+                    <label>Usuario: </label>                      
+                    <input type='text' class="form-control" style="height:32px;" value="" name="nombre" />
+                    <br>
+
+                    <label>Foro: </label> 
+                    <select name="idForo" id="idForo" class="form-control">
+                      <option value="">Todos</option>
+                      {% for foro in foros %}
+                      <option value="{{ foro.id }}">{{ foro.titulo }}</option>
+                      {% endfor %}
+                    </select>
+                    <br>
+
+                    <label>Desde: </label>
+                    <div class='input-group date' id='desde' >
+                      
+                      <input type='text' class="form-control" style="height:32px;" value="{{ desde }}" name="desde"  />
+                      <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                    </div>
+
+                    <label>Hasta: </label>
+                    <div class='input-group date' id='hasta'>
+                      
+                      <input type='text' class="form-control" style="height:32px;" value="{{ hasta }}" name="hasta"  />
+                      <span class="input-group-addon" >
+                        <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                    </div>
+                    <label>&nbsp;</label><br>
+                    <input type="hidden" name="buscaradv" id="buscaradv" value="true">
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+    {% endif %}
+    {% if advancedsearch == "truedescargas" %}
+        <!-- Modal Búsqueda Avanzada -->
+          <div id="busquedaAvanzadaModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title"><i class="fa fa-search-plus" aria-hidden="true"></i> Búsqueda Avanzada</h4>
+                </div>
+                <div class="modal-body">
+                  <form class="uk-panel uk-panel-box uk-form" method="POST" action="{{ path(namevar~'_index') }}" id="buscarAdvanzadoForm" autocomplete="off">
+                    <label>Nombres y Apellidos: </label>                      
+                    <input type='text' class="form-control" style="height:32px;" value="" name="nombre" />
+                    <br>
+
+                    <label>Desde: </label>
+                    <div class='input-group date' id='desde' >
+                      
+                      <input type='text' class="form-control" style="height:32px;" value="{{ desde }}" name="desde"  />
+                      <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                    </div>
+
+                    <label>Hasta: </label>
+                    <div class='input-group date' id='hasta'>
+                      
+                      <input type='text' class="form-control" style="height:32px;" value="{{ hasta }}" name="hasta"  />
+                      <span class="input-group-addon" >
+                        <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                    </div>
+                    <br>
+
+                    <label>Categoría: </label> 
+                    <select name="idCategoria" id="idCategoria" class="form-control">
+                      <option value="">Todas</option>
+                      {% for categoria in categorias %}
+                      <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                      {% endfor %}
+                    </select>
+                    <br>
+
+                    <input type="hidden" name="buscaradv" id="buscaradv" value="true">
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+    {% endif %}
+       
+
+    <div class="downloadpost" style="font-size:30px; color: {{ coloractual }}">{{ titulo }}</div>
+  <div class="col-lg-12">
+    <form class="uk-panel uk-panel-box uk-form" method="POST" action="{{ path(namevar~'_index') }}" id="buscarForm" autocomplete="off">
+        <div class="input-group col-xs-12 col-sm-8 col-md-8 col-lg-6" style="left: -14px;">
+          <span class="input-group-btn">
+            {% if completeSearch is defined %}
+            {% if completeSearch != "false" %}
+            <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#completeSearchDiv"><i class="fa fa-search-plus" aria-hidden="true"></i> Búsqueda</button>
+            {% endif %}
+            {% endif %}
+
+            {% if hidevertodos is defined %}{% else %}
+            <a href="{{ path(namevar~'_index') }}" class="btn btn-primary" data-toggle="tooltip" title="Ver Todos los Registros" ><i class="fa fa-list-alt" aria-hidden="true"></i> Ver todos</a>
+            {% endif %} 
+
+            {% if new == "true" %}
+            <a href="{{ path(namevar~'_new') }}" class="btn btn-primary" data-toggle="tooltip" title="Crear Nuevo"><i class="fa fa-file-text" aria-hidden="true"></i> Crear Nuevo</a>
+            {% endif %}
+
+            {% if new == "trueforo" %}
+            <a href="{{ path(namevar~'_new') }}" class="btn btn-primary" data-toggle="tooltip" title="Crear Nuevo"><i class="fa fa-comments-o" aria-hidden="true"></i> Comentar en los foros</a>
+            {% endif %}
+
+            {% if excel == "true" %}
+            <a href="javascript:void(0);" onclick="sendExcelGeneral()" class="btn btn-success" data-toggle="tooltip" title="Generar excel"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Generar Excel</a>
+            {% endif %}
+
+            {% if loadFile is defined %}
+            <a href="javascript:void(0);" class="btn btn-success" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Cargar Excel</a>
+            {% endif %}            
+
+            {% if pdf == "true" %}
+            <a href="{{ path(namevar~'_new') }}" class="btn btn-primary" data-toggle="tooltip" title="Generar PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Generar PDF</a>
+            {% endif %}
+          </span>
+        </div>
+    </form>
+  </div>
+
+  <div style="clear: both;"></div>
+  <div style="height: 10px;">&nbsp;</div>
+  {% if excel == "true" %}
+    {% if busquedageneral != "" %}    
+  <form action="{{ path(namevar~'_exportarExcel') }}" method="POST" id="formExcelGeneral" name="formExcelGeneral">
+    <input type="hidden" id="buscar" name="buscar" value="{{ busquedageneral }}">
+  </form>
+  {% else %}
+    <form action="{{ path(namevar~'_exportarExcel') }}" method="POST" id="formExcelGeneralFecha" name="formExcelGeneralFecha">
+      <input type="hidden" name="nombre" value="">
+
+    </form>
+  {% endif %}
+  <form action="{{ path(namevar~'_exportarExcel') }}" method="POST" id="formExcel" name="formExcel">
+    <input type="hidden" id="idvar" name="idvar" value="">
+  </form> 
+  {% endif %}
+    <div class="col-lg-12">
+    <center>{{ knp_pagination_render(resultset) }}</center>
+    </div>
+    <table class="table table-condensed table-hover table-striped" border="1" bordercolor="#CCCCCC">
+        <thead>
+            <tr style="background-color:#EDEDED;">
+                {% for etiqueta in etiquetas %}
+                    <th style="text-align:center;">{{ etiqueta }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+        {% set counter1 = (startPagination + 1)  %}
+        {% for result in resultset %}
+            <tr>
+                <td>{{ counter1 }}</td>
+                    {% include bundlevar~':_fields.html.twig' %}
+                {% if edit == "true" %}
+                <td class="tableclass1" width="1%" style="text-align:center;">                                     
+                    <a href="{{ path(namevar~'_edit', { 'id': result.id }) }}" class="btn btn-sm btn-primary">
+                    <span style="font-size:14px;" data-toggle="tooltip" title="Editar" ><i class="fa fa-edit"></i></span>
+                    </a>                    
+                </td>
+                {% endif %}
+                {% if delete == "true" %}
+                <td class="tableclass1" width="1%" style="text-align:center;">                                     
+                    <a href="javascript:void(0);" class="btn btn-sm btn-primary" onClick="confirmdelete('{{ path(namevar~'_delete', { 'id': result.id }) }}')" data-toggle="tooltip" title="Eliminar" ><span style="font-size:14px;" >
+                    <i class="fa fa-remove"></i></span>
+                    </a>                   
+                </td>
+                {% endif %}
+                {% if pdfone == "true" %}
+                <td class="tableclass1" width="1%" style="text-align:center;">                                     
+                    <a href="{{ path(namevar~'_generarPfd', { 'id': result.id }) }}" class="btn btn-sm btn-primary">
+                    <span style="font-size:14px;" data-toggle="tooltip" title="Ver PDF" ><i class="fa fa-file-pdf-o"></i></span>
+                    </a>                    
+                </td>
+                {% endif %}
+            </tr>
+        {% set counter1 = counter1 + 1%}
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="col-lg-12">
+    <center>{{ knp_pagination_render(resultset) }}</center>
+    </div>
+    <script>
+        function confirmdelete(delvar){            
+            swal({
+              title: "Eliminar",
+              text: "¿Realmente desea Eliminar el registro?",
+              type: "error",
+              showCancelButton: true,
+              cancelButtonText: "Cancelar",
+              confirmButtonClass: "btn-danger",
+              confirmButtonText: "Eliminar",
+              closeOnConfirm: false
+            },
+            function(){           
+              window.location.href=delvar;
+            });
+        }
+        function confirmarchivar(delvar){            
+            swal({
+              title: "Archivar",
+              text: "¿Realmente desea Archivar el registro?",
+              type: "error",
+              showCancelButton: true,
+              cancelButtonText: "Cancelar",
+              confirmButtonClass: "btn-danger",
+              confirmButtonText: "Archivar",
+              closeOnConfirm: false
+            },
+            function(){           
+              window.location.href=delvar;
+            });
+        }
+
+        $(document).ready(function(){
+          $('#addcodigo').on('keydown', function(e) {
+              if (e.which == 13) {
+                inscribirDrogueria();
+              }
+          });
+          $('[data-toggle="tooltip"]').tooltip(); 
+        });
+        
+        function sendExcel(idvar){
+          document.getElementById("idvar").value = idvar;
+          document.getElementById("formExcel").submit(); 
+        }
+        {% if advancedsearch == "true" %}
+        $(function () {
+                $('#desde').datetimepicker({                    
+          locale: 'es',
+          format: 'YYYY-MM-DD',
+                });
+            });
+        $(function () {
+                $('#hasta').datetimepicker({                    
+          locale: 'es',
+          format: 'YYYY-MM-DD',
+                });
+            });
+        {% endif %}
+        function sendPdf(idvar){
+          document.getElementById("idvarpdf").value = idvar;
+          document.getElementById("formPdf").submit(); 
+        }
+
+        function validarExcel(objvar){
+          var file = objvar.files[0];
+          var tmp1 = objvar.value.split(".");
+          var boovar = false;
+
+          if(tmp1[1] != "xls" && tmp1[1] != "xlsx"){
+            boovar = true;
+          }
+
+          if(boovar == true){
+              objvar.value = "";
+              swal(
+                '',
+                'Error: El Archivo debe estar en formato Excel',
+                'warning'
+              );
+          }
+        }
+        function resetChecksProveedores(){
+          proveedores.forEach(function(currentValue,index,arr){
+            document.getElementById("list_" + index).checked = false;
+            proveedores[index] = 0;
+          })
+        }
+        function setChecksProveedores(){
+          proveedores.forEach(function(currentValue,index,arr){
+            if(currentValue == 0){
+              document.getElementById("list_" + index).checked = false;
+            }else{
+              document.getElementById("list_" + index).checked = true;
+            }
+          })
+        }
+        function proveedorAleatorio(){
+          document.getElementById("proveedorAleatorioDiv").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br><span style="font-size:14px; color:#000000;"><b>Cargando Proveedor Aleatorio</b></span><br><br><br><br>';
+          var urlvar = '{{ url("eventos_cargarAleatorio", { "id": "1" }) }}';
+          $.ajax({
+              method: "POST",
+              url: urlvar,
+              data: { 
+                  'idvar': '1'
+              },
+              dataType: 'json',
+              success: function(data){ 
+                  if(data.hasOwnProperty("response") && data.response === "success"){
+                      document.getElementById("proveedorAleatorioDiv").innerHTML = data.ganadores[0].nombre + '<br><img src="{{asset("images/proveedores/") }}' + data.ganadores[0].imagen + '" style="max-height:220px;" class="img-respnsive" ><br><br>';
+                  }else{
+                    // proveedorAleatorio();
+                    return;
+                  }
+              },
+              error: function(jqXHR, exception)
+              {
+                  // proveedorAleatorio();
+                  if(jqXHR.status === 405)
+                  {
+                      console.error("METHOD NOT ALLOWED!");
+                      
+                  }
+              }
+          });
+          $('#proveedorAleatorioModal').modal({
+                show: 'true'
+          });
+        }
+        function asociadoAleatorio(){
+          document.getElementById("asociadoAleatorioDiv").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br><span style="font-size:14px; color:#000000;"><b>Cargando Proveedor Aleatorio</b></span><br><br><br><br>';
+          var urlvar = '{{ url("eventos_cargarAleatorio", { "id": "2" }) }}';
+          $.ajax({
+              method: "POST",
+              url: urlvar,
+              data: { 
+                  'idvar': '2'
+              },
+              dataType: 'json',
+              success: function(data){ 
+                  if(data.hasOwnProperty("response") && data.response === "success"){
+                      document.getElementById("asociadoAleatorioDiv").innerHTML = "Asociado: " + data.ganadores[0].nombreAsociado + '<br>Nombre Droguería: ' + data.ganadores[0].nombreDrogueria + '<br>Nit: ' + data.ganadores[0].nit + '<br>Código: ' + data.ganadores[0].codigo + '<br><br><br>';
+                  }else{
+                    // asociadoAleatorio();
+                    return;
+                  }
+              },
+              error: function(jqXHR, exception)
+              {
+                  // asociadoAleatorio();
+                  if(jqXHR.status === 405)
+                  {
+                      console.error("METHOD NOT ALLOWED!");
+                      
+                  }
+              }
+          });
+
+          $('#asociadoAleatorioModal').modal({
+                show: 'true'
+            });
+        }
+
+        var counterFields = 0;
+        function addField(typeVar){
+          counterFields ++;
+          $("#completeSearchCounter").val(counterFields);
+
+          var selectedOption = $("#fieldType").prop('selectedIndex');
+          //alert(types[selectedOption]);
+
+          var selectedOption2 = $( "#fieldType option:selected" ).text();
+          var selectField = '<input id="fieldTypeAux_' + counterFields + '" name="fieldTypeAux_' + counterFields + '" type="text" class="form-control" style="width:30%" value="' + selectedOption2 + '" readonly="readonly"> <input type="hidden" name="fieldType_' + counterFields + '" id="fieldType_' + counterFields + '" value="' + fields[selectedOption] + '"> ';
+
+
+          if(types[selectedOption] == "date"){
+            var inputField = '<input id="findField_' + counterFields + '" name="findField_' + counterFields + '" type="text" class="form-control" style="width:40%" onClick="startCalendar(this, ' + counterFields + ')" onBlur="restoreButton(' + counterFields + ')"><span class="input-group-btn">';
+
+          }else{
+            var inputField = '<input id="findField_' + counterFields + '" name="findField_' + counterFields + '" type="text" class="form-control" style="width:40%" required="required"><span class="input-group-btn"> ';
+          }
+
+          $( "#setFieldDiv" ).append( '<div id="setFieldDivLine_' + counterFields + '" class="input-group" style="margin-bottom:6px; background-color:#E5E5E5; ">' + selectField + '  <select id="fieldQueryAux_' + counterFields + '" name="fieldQueryAux_' + counterFields + '" class="form-control" style="width:30%"><option value="CONTIENE">CONTIENE</option> <option value="ESIGUAL">ES IGUAL</option> <option value="NOESIGUAL">NO ES IGUAL</option> <option value="MENORQUE">MENOR QUE</option> <option value="MAYORQUE">MAYOR QUE</option> </select> ' + inputField + ' <button id="buttonFields_' + counterFields + '" class="btn btn-primary" type="button" onClick="removeField(' + counterFields + ')"><i class="fa fa-minus-square" aria-hidden="true"></i></button>    </span>  </div>' );
+
+          //var selectedOption = $( "#fieldType option:selected" ).text();
+          if(types[selectedOption] == "date"){
+            registrarDateTime(counterFields);
+          }
+          
+          $('#fieldTypeAux_' + counterFields + ' option:eq(' + selectedOption + ')').attr('selected', 'selected')
+        }
+        function removeField(idvar){
+          $( "#setFieldDivLine_" + idvar ).remove();
+        }
+        function registrarDateTime(counterFields){
+          //alert(counterFields);
+          $('#findField_' + counterFields).datetimepicker({                    
+          locale: 'es',
+          format: 'YYYY-MM-DD',
+                });
+        }
+        function startCalendar(objvar, counterFields){
+          $('#buttonFields_' + counterFields).hide();
+          $('#' + objvar.id).datetimepicker('show');
+        }
+        function restoreButton(counterFields){
+          $('#buttonFields_' + counterFields).show();
+        } 
+        </script>
+{% endblock %}

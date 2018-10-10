@@ -1,0 +1,24 @@
+eventosproveedores_index:
+    path:     /
+    defaults: { _controller: "CpdgAdministradorBundle:EventosProveedores:index" }
+    methods:  GET
+
+eventosproveedores_show:
+    path:     /{id}/show
+    defaults: { _controller: "CpdgAdministradorBundle:EventosProveedores:show" }
+    methods:  GET
+
+eventosproveedores_new:
+    path:     /new
+    defaults: { _controller: "CpdgAdministradorBundle:EventosProveedores:new" }
+    methods:  [GET, POST]
+
+eventosproveedores_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "CpdgAdministradorBundle:EventosProveedores:edit" }
+    methods:  [GET, POST]
+
+eventosproveedores_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "CpdgAdministradorBundle:EventosProveedores:delete" }
+    methods:  DELETE

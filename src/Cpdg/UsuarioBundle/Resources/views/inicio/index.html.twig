@@ -1,0 +1,23 @@
+{% extends '::base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}   
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}    
+{% endblock %}
+{% block body %} 
+<div class="col-xs-1 col-sm-1 col-md-2 col-lg-2">&nbsp;</div>
+<div class="container col-xs-10 col-sm-10 col-md-8 col-lg-8" style="margin: 0px auto; text-align: center;">    
+   <h4>PROVEEDORES</h4>
+    <br>
+   <center><img src="{{ asset('images/proveedores/') }}{{ app.user.idProveedor.imagen }}" style="max-height:100px;" class="img-responsive"></center>
+    <br>
+    <button class="btn btn-primaryorange" onclick="window.location.href='{{ path("eventosusr_index") }}'">Ver Eventos y Realizar Proceso de Acreditación</button>
+    {% if app.user.superUsuario == 1 %}
+    	<br><br>
+    	<button class="btn btn-primaryorange" onclick="window.location.href='{{ path("proveedoresusuariosusr_index") }}'">Usuarios del Proveedor</button>
+    {% endif %}
+  </div>
+
+</div> 
+{% endblock %}

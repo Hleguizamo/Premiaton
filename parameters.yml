@@ -1,0 +1,12 @@
+# This file is auto-generated during the composer install
+parameters:
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: interfac_premiaton
+    database_user: interfac_premiat
+    database_password: OA.=xX10#QC}C
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    secret: 1bd20cjdef6b6bef123452ebe9c6b1c6d870a3c8

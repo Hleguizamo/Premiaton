@@ -1,0 +1,24 @@
+empleados_index:
+    path:     /
+    defaults: { _controller: "CpdgAdministradorBundle:Empleados:index" }
+    methods:  [GET, POST]
+
+empleados_show:
+    path:     /{id}/show
+    defaults: { _controller: "CpdgAdministradorBundle:Empleados:show" }
+    methods:  [GET, POST]
+
+empleados_new:
+    path:     /new
+    defaults: { _controller: "CpdgAdministradorBundle:Empleados:new" }
+    methods:  [GET, POST]
+
+empleados_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "CpdgAdministradorBundle:Empleados:edit" }
+    methods:  [GET, POST]
+
+empleados_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "CpdgAdministradorBundle:Empleados:delete" }
+    methods:  [GET, POST]

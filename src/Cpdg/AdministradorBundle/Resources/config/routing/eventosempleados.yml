@@ -1,0 +1,28 @@
+eventosempleados_index:
+    path:     /
+    defaults: { _controller: "CpdgAdministradorBundle:EventosEmpleados:index" }
+    methods:  [GET, POST]
+eventosempleados_show:
+    path:     /{id}/show
+    defaults: { _controller: "CpdgAdministradorBundle:EventosEmpleados:show" }
+    methods:  [GET, POST]
+eventosempleados_new:
+    path:     /new
+    defaults: { _controller: "CpdgAdministradorBundle:EventosEmpleados:new" }
+    methods:  [GET, POST]
+eventosempleados_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "CpdgAdministradorBundle:EventosEmpleados:edit" }
+    methods:  [GET, POST]
+eventosempleados_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "CpdgAdministradorBundle:EventosEmpleados:delete" }
+    methods:  [GET, POST]
+eventosempleados_cargarGanadores:
+    path:     /{id}/cargarGanadores
+    defaults: { _controller: "CpdgAdministradorBundle:EventosEmpleados:cargarGanadores" }
+    methods:  [GET, POST]
+eventosempleados_pantallaGanadores:
+    path:     /{id}/pantallaGanadores
+    defaults: { _controller: "CpdgAdministradorBundle:EventosEmpleados:pantallaGanadores" }
+    methods:  [GET, POST]

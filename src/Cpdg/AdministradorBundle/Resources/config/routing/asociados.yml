@@ -1,0 +1,29 @@
+asociados_index:
+    path:     /
+    defaults: { _controller: "CpdgAdministradorBundle:Asociados:index" }
+    methods:  [GET, POST]
+
+asociados_show:
+    path:     /{id}/show
+    defaults: { _controller: "CpdgAdministradorBundle:Asociados:show" }
+    methods:  [GET, POST]
+
+asociados_new:
+    path:     /new
+    defaults: { _controller: "CpdgAdministradorBundle:Asociados:new" }
+    methods:  [GET, POST]
+
+asociados_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "CpdgAdministradorBundle:Asociados:edit" }
+    methods:  [GET, POST]
+
+asociados_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "CpdgAdministradorBundle:Asociados:delete" }
+    methods:  [GET, POST]
+
+asociados_exportarExcel:
+    path:     /exportarExcel
+    defaults: { _controller: "CpdgAdministradorBundle:Asociados:exportarExcel" }
+    methods:  [GET, POST]

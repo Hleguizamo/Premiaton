@@ -1,0 +1,52 @@
+eventos_index:
+    path:     /
+    defaults: { _controller: "CpdgAdministradorBundle:Eventos:index" }
+    methods:  [GET, POST]
+eventos_show:
+    path:     /{id}/show
+    defaults: { _controller: "CpdgAdministradorBundle:Eventos:show" }
+    methods:  [GET, POST]
+eventos_new:
+    path:     /new
+    defaults: { _controller: "CpdgAdministradorBundle:Eventos:new" }
+    methods:  [GET, POST]
+eventos_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "CpdgAdministradorBundle:Eventos:edit" }
+    methods:  [GET, POST]
+eventos_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "CpdgAdministradorBundle:Eventos:delete" }
+    methods:  [GET, POST]
+eventos_cargarProveedores:
+    path:     /{id}/cargarProveedores
+    defaults: { _controller: "CpdgAdministradorBundle:Eventos:cargarProveedores" }
+    methods:  [GET, POST]
+eventos_setProveedor:
+    path:     /{id}/setProveedor
+    defaults: { _controller: "CpdgAdministradorBundle:Eventos:setProveedor" }
+    methods:  [GET, POST]
+eventos_actualizarProveedores:
+    path:     /{id}/actualizarProveedores
+    defaults: { _controller: "CpdgAdministradorBundle:Eventos:actualizarProveedores" }
+    methods:  [GET, POST]
+eventos_cargarInscripciones:
+    path:     /{id}/cargarInscripciones
+    defaults: { _controller: "CpdgAdministradorBundle:Eventos:cargarInscripciones" }
+    methods:  [GET, POST]
+eventos_cargarGanadores:
+    path:     /{id}/cargarGanadores
+    defaults: { _controller: "CpdgAdministradorBundle:Eventos:cargarGanadores" }
+    methods:  [GET, POST]
+eventos_cargarAleatorio:
+    path:     /{id}/cargarAleatorio
+    defaults: { _controller: "CpdgAdministradorBundle:Eventos:cargarAleatorio" }
+    methods:  [GET, POST]
+eventos_pantallaGanadores:
+    path:     /{id}/pantallaGanadores
+    defaults: { _controller: "CpdgAdministradorBundle:Eventos:pantallaGanadores" }
+    methods:  [GET, POST]
+eventos_generarReporte:
+    path:     /{id}/generarReporte
+    defaults: { _controller: "CpdgAdministradorBundle:Eventos:generarReporte" }
+    methods:  [GET, POST]

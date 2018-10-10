@@ -1,0 +1,60 @@
+<?php
+
+namespace Cpdg\AdministradorBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * EventosGanadoresAleatoriosAsociados
+ *
+ * @ORM\Table(name="eventos_ganadores_aleatorios_asociados", indexes={@ORM\Index(name="id_evento", columns={"id_evento"}), @ORM\Index(name="id_asociado", columns={"id_asociado"})})
+ * @ORM\Entity
+ */
+class EventosGanadoresAleatoriosAsociados
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="date", nullable=false)
+     */
+    private $fecha;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="hora", type="time", nullable=false)
+     */
+    private $hora;
+
+    /**
+     * @var \Eventos
+     *
+     * @ORM\ManyToOne(targetEntity="Eventos")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_evento", referencedColumnName="id")
+     * })
+     */
+    private $idEvento;
+
+    /**
+     * @var \Asociados
+     *
+     * @ORM\ManyToOne(targetEntity="Asociados")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_asociado", referencedColumnName="id")
+     * })
+     */
+    private $idAsociado;
+
+
+}
+

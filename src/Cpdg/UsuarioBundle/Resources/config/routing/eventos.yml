@@ -1,0 +1,20 @@
+eventosusr_index:
+    path:     /
+    defaults: { _controller: "CpdgUsuarioBundle:Eventos:index" }
+    methods:  [GET, POST]
+eventosusr_cargarInscripciones:
+    path:     /{id}/cargarInscripciones
+    defaults: { _controller: "CpdgUsuarioBundle:Eventos:cargarInscripciones" }
+    methods:  [GET, POST]
+eventosusr_cargarGanadores:
+    path:     /{id}/cargarGanadores
+    defaults: { _controller: "CpdgUsuarioBundle:Eventos:cargarGanadores" }
+    methods:  [GET, POST]
+eventosusr_inscribirDrogueria:
+    path:     /{id}/inscribirDrogueria
+    defaults: { _controller: "CpdgUsuarioBundle:Eventos:inscribirDrogueria" }
+    methods:  [GET, POST]
+eventosusr_eliminarDrogueria:
+    path:     /{id}/eliminarDrogueria
+    defaults: { _controller: "CpdgUsuarioBundle:Eventos:eliminarDrogueria" }
+    methods:  [GET, POST]

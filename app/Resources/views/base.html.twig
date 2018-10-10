@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}PREMIATÓN{% endblock %}</title>       
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">        
+        
+        
+                        
+        <!-- <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}">
+        <script type="text/javascript" src="{{ asset('js/jquery-2.1.0.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script> -->
+        <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+        <script src="{{ asset('js/jquery.min.js') }}"></script>
+        <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('js/sweet-alert.js') }}"></script>
+        <link rel="stylesheet" href="{{ asset('css/sweet-alert.css') }}">  
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/coopidrogas.css') }}"> 
+        <script src="{{ asset('js/moment-with-locales.js') }}"></script>
+        <script src="{{ asset('js/bootstrap-datetimepicker.js') }}"></script>
+
+        <script type='text/javascript'>//<![CDATA[
+        $(window).load(function(){    
+            $(document).ready(function () {
+                $("nav").find("li").on("click", "a", function () {
+                    $('.navbar-collapse.in').collapse('hide');
+                });
+            });
+        });//]]> 
+        </script>
+        {% set colorbasemenu = "#A0A0A0" %}
+        {% set colormenu1 = "#95C11F" %}
+        {% set colormenu2 = "#662483" %}
+        {% set colormenu3 = "#E94E1B" %}
+        {% set colormenu4 = "#3AAA35" %}
+        {% set colormenu5 = "#3AAA35" %}
+        {% set colormenu6 = "#F39200" %}
+        {% set colormenu7 = "#E6007E" %}
+
+        {% if namevar == "eventos" %}
+            {% set coloractual = colormenu1 %}
+        {% elseif namevar == "eventosusr" %}
+            {% set coloractual = colormenu1 %}
+        {% elseif namevar == "subeventos" %}
+            {% set coloractual = colormenu1 %}
+        {% elseif namevar == "proveedores" %}
+            {% set coloractual = colormenu2 %}
+        {% elseif namevar == "proveedoresusuariosusr" %}
+            {% set coloractual = colormenu2 %}
+        {% elseif namevar == "proveedoresusuarios" %}
+            {% set coloractual = colormenu2 %}
+        {% elseif namevar == "asociados" %}
+            {% set coloractual = colormenu3 %}
+        {% elseif namevar == "administrador" %}
+            {% set coloractual = colormenu4 %}
+        {% elseif namevar == "administradorregional" %}
+            {% set coloractual = colormenu5 %}
+        {% elseif namevar == "eventosempleados" %}
+            {% set coloractual = colormenu6 %}
+        {% elseif namevar == "empleados" %}
+            {% set coloractual = colormenu6 %}
+        {% elseif namevar == "logs" %}
+            {% set coloractual = colormenu7 %}
+        {% else %}
+            {% set coloractual = colorbasemenu %}
+        {% endif %}
+
+        <style type="text/css">
+        
+            .btn-primary, .btn-primary:link, .btn-primary:visited {
+                background-color: {{ coloractual }};
+                color: #ffffff;
+                border: 0px;
+                font-size: 13px;
+            }
+             
+            .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:active:focus, .btn-primary.active, .open > .dropdown-toggle.btn-primary , .disabled{
+                background-color: #B2B1B5;
+                border: 0px;
+                color: #ffffff;
+                font-size: 13px;
+            }
+             
+            .btn-primary:active, .btn-primary.active {
+                background-color: {{ coloractual }};
+                box-shadow: none;
+                border: 0px;
+                color: #ffffff;
+                font-size: 13px;
+            } 
+            
+            
+        </style>
+        
+    </head>
+    <body background="{{ asset('images/bg1.png') }}">
+    <div style="position:relative; background-color: #FFFFFF; 
+    -webkit-box-shadow: 0px 5px 5px 0px rgba(156,156,156,1);
+    -moz-box-shadow: 0px 5px 5px 0px rgba(156,156,156,1);
+    box-shadow: 0px 5px 5px 0px rgba(156,156,156,1);
+    "> 
+       <div style="position: absolute; width: 300px; height: 20px; bottom: 10px; left: 10px;">
+          Usuario: <b>{{ app.user.nombre }}</b>
+       </div>
+
+       <div style="position: absolute; width: 100px; height: 40px; bottom: 0px; right: 2px;">
+       
+       <div style="float: right; width: 40px; text-align: center; font-size: 10px; font-weight: bold;">
+        {% if app.user and is_granted('ROLE_ADMINISTRATOR') %}
+       <a href="{{ path('administrador_inicio_logoutbridge') }}" style="text-decoration: none;"><i style="font-size: 26px;" class="fa fa-sign-out" aria-hidden="true"></i><br>Salir</a>
+        {% elseif app.user and is_granted('ROLE_USER') %}
+        <a href="{{ path('usuario_inicio_logoutbridge') }}" style="text-decoration: none;"><i style="font-size: 26px;" class="fa fa-sign-out" aria-hidden="true"></i><br>Salir</a>
+        {% endif %}
+       </div>
+       <div style="float: right; width: 10px;">&nbsp;</div>
+
+       <div style="float: right; width: 40px; text-align: center; font-size: 10px; font-weight: bold;">
+       {% if app.user and is_granted('ROLE_ADMINISTRATOR') %}
+       <a href="{{ path('administrador_inicio') }}" style="text-decoration: none;"><i style="font-size: 26px;" class="fa fa-home" aria-hidden="true"></i><br>Inicio</a>
+       {% elseif app.user and is_granted('ROLE_USER') %}
+       <a href="{{ path('usuario_inicio') }}" style="text-decoration: none;"><i style="font-size: 26px;" class="fa fa-home" aria-hidden="true"></i><br>Inicio</a>
+       {% endif %}
+       </div>
+       <div style="clear: both;"></div>
+       </div>
+       <center>
+        {% if app.user and is_granted('ROLE_ADMINISTRATOR') %}
+        <a href="{{ path('administrador_inicio') }}"><img src="{{ asset('images/logoFinal1.png') }}" class="img-responsive"></a>
+        {% elseif app.user and is_granted('ROLE_USER') %}
+        <a href="{{ path('usuario_inicio') }}"><img src="{{ asset('images/logoFinal1.png') }}" class="img-responsive"></a>
+        {% endif %}
+       </center> 
+
+    </div>
+    {% if app.user and not is_granted('ROLE_USER') %}
+    {% if namevar != "inicio" %}
+        <div style="position:relative; height: auto; min-height: 91px;
+                background-color: #EEEEEE; 
+                -webkit-box-shadow: 0px 5px 5px 0px rgba(156,156,156,1);
+                -moz-box-shadow: 0px 5px 5px 0px rgba(156,156,156,1);
+                box-shadow: 0px 5px 5px 0px rgba(156,156,156,1);
+            ">
+            <div style="height: 20px;">&nbsp;</div>
+            {% if app.user and is_granted('ROLE_USER') %}
+                  {% if app.user.superusuario == 1 %} 
+
+                      <nav id="custom-bootstrap-menu" class="navbar navbar-default" role="navigation">
+                        <div class="container-fluid">
+                            <div class="navbar-header">
+                                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span>
+                                 <span class="icon-bar"></span>
+                                 <span class="icon-bar"></span>
+                                 <span class="icon-bar"></span>
+                                </button>
+                            <div>
+                            <div style="clear: both;"></div>
+                            </div>
+
+                            </div>
+                            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                <ul id="menuLi" class="nav navbar-nav navbar-left">
+                                     
+                                     <li {% if namevar=="eventos" %} class="active" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                          <a href="{{ path('eventos_index') }}" 
+                                          {% if namevar!="eventos" %} 
+                                          onmouseover="this.style.color = '{{ colormenu1 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                          {% endif %}
+                                          >EVENTOS</a>
+                                     </li>
+
+                                     <li {% if namevar=="proveedores" %} class="active2" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                          <a href="{{ path('proveedores_index') }}"
+                                          {% if namevar!="proveedores" %} 
+                                          onmouseover="this.style.color = '{{ colormenu2 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                          {% endif %}
+                                          >PROVEEDORES</a>
+                                      </li>
+
+
+                                      <li {% if namevar=="asociados" %} class="active3" {% endif %} style="border-left:1px solid #A0A0A0; border-right:1px solid #A0A0A0;">
+                                          <a href="{{ path('asociados_index') }}"
+                                          {% if namevar!="asociados" %} 
+                                          onmouseover="this.style.color = '{{ colormenu3 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                          {% endif %}
+                                          >ASOCIADOS</a>
+                                      </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav> 
+
+                  {% endif %}
+            {% elseif app.user and is_granted('ROLE_ADMINISTRATOR') %}
+                {% if app.user.superadmin == 1 %} 
+                  {% if app.user.superadministrador == 1 %}
+                    <nav id="custom-bootstrap-menu" class="navbar navbar-default" role="navigation">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span>
+                             <span class="icon-bar"></span>
+                             <span class="icon-bar"></span>
+                             <span class="icon-bar"></span>
+                            </button>
+                        <div>
+                        <div style="clear: both;"></div>
+                        </div>
+
+                        </div>
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                            <ul id="menuLi" class="nav navbar-nav navbar-left">
+                                 
+                                 <li {% if namevar=="eventos" %} class="active" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                      <a href="{{ path('eventos_index') }}" 
+                                      {% if namevar!="eventos" %} 
+                                      onmouseover="this.style.color = '{{ colormenu1 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                      >EVENTOS</a>
+                                 </li>
+
+                                 <li {% if namevar=="proveedores" %} class="active2" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                      <a href="{{ path('proveedores_index') }}"
+                                      {% if namevar!="proveedores" %} 
+                                      onmouseover="this.style.color = '{{ colormenu2 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                      >PROVEEDORES</a>
+                                  </li>
+
+
+                                  <li {% if namevar=="asociados" %} class="active3" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                      <a href="{{ path('asociados_index') }}"
+                                      {% if namevar!="asociados" %} 
+                                      onmouseover="this.style.color = '{{ colormenu3 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                      >ASOCIADOS</a>
+                                  </li>
+
+                                 <li {% if namevar=="administrador" %} class="active4" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                 <a href="{{ path('administrador_index') }}"
+                                    {% if namevar!="administradores" %} 
+                                      onmouseover="this.style.color = '{{ colormenu4 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                 >ADMINISTRADORES</a></li>
+
+                                <li {% if namevar=="eventosempleados" %} class="active6" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                <a href="{{ path('eventosempleados_index') }}"
+                                    {% if namevar!="ciudades" %} 
+                                      onmouseover="this.style.color = '{{ colormenu6 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                >EVENTOS INTERNOS</a></li>
+
+                                <li {% if namevar=="departamentos" %} class="active7" {% endif %} style="border-left:1px solid #A0A0A0; border-right:1px solid #A0A0A0;">
+                                <a href="{{ path('logs_index') }}"
+                                    {% if namevar!="departamentos" %} 
+                                      onmouseover="this.style.color = '{{ colormenu7 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                >REGISTRO</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+                  {% else %}
+
+                <nav id="custom-bootstrap-menu" class="navbar navbar-default" role="navigation">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span>
+                             <span class="icon-bar"></span>
+                             <span class="icon-bar"></span>
+                             <span class="icon-bar"></span>
+                            </button>
+                        <div>
+                        <div style="clear: both;"></div>
+                        </div>
+
+                        </div>
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                            <ul id="menuLi" class="nav navbar-nav navbar-left">
+                                 
+                                 {% if app.user.menuEventos == 1 %}
+                                 <li {% if namevar=="eventos" %} class="active" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                      <a href="{{ path('eventos_index') }}" 
+                                      {% if namevar!="eventos" %} 
+                                      onmouseover="this.style.color = '{{ colormenu1 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                      >EVENTOS</a>
+                                 </li>
+                                 {% endif %}
+                                 {% if app.user.menuProveedores == 1 %}
+                                 <li {% if namevar=="proveedores" %} class="active2" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                      <a href="{{ path('proveedores_index') }}"
+                                      {% if namevar!="proveedores" %} 
+                                      onmouseover="this.style.color = '{{ colormenu2 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                      >PROVEEDORES</a>
+                                  </li>
+                                  {% endif %}
+                                 {% if app.user.menuAsociados == 1 %}
+
+                                  <li {% if namevar=="asociados" %} class="active3" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                      <a href="{{ path('asociados_index') }}"
+                                      {% if namevar!="asociados" %} 
+                                      onmouseover="this.style.color = '{{ colormenu3 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                      >ASOCIADOS</a>
+                                  </li>
+                                  {% endif %}
+                                 {% if app.user.menuAdministradores == 1 %}
+
+                                 <li {% if namevar=="administrador" %} class="active4" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                 <a href="{{ path('administrador_index') }}"
+                                    {% if namevar!="administradores" %} 
+                                      onmouseover="this.style.color = '{{ colormenu4 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                 >ADMINISTRADORES</a></li>
+                                 {% endif %}
+                                 {% if app.user.menuEventosinternos == 1 %}
+
+                                <li {% if namevar=="eventosempleados" %} class="active6" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                <a href="{{ path('eventosempleados_index') }}"
+                                    {% if namevar!="ciudades" %} 
+                                      onmouseover="this.style.color = '{{ colormenu6 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                >EVENTOS INTERNOS</a></li>
+                                {% endif %}
+                                 {% if app.user.menuRegistro == 1 %}
+
+                                <li {% if namevar=="departamentos" %} class="active7" {% endif %} style="border-left:1px solid #A0A0A0; border-right:1px solid #A0A0A0;">
+                                <a href="{{ path('logs_index') }}"
+                                    {% if namevar!="departamentos" %} 
+                                      onmouseover="this.style.color = '{{ colormenu7 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                >REGISTRO</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+
+                  {% endif %}
+                {% else %}
+                    <nav id="custom-bootstrap-menu" class="navbar navbar-default" role="navigation">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span>
+                             <span class="icon-bar"></span>
+                             <span class="icon-bar"></span>
+                             <span class="icon-bar"></span>
+                            </button>
+                        <div>
+                        <div style="clear: both;"></div>
+                        </div>
+
+                        </div>
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                            <ul id="menuLi" class="nav navbar-nav navbar-left">
+                                 
+                                 <li {% if namevar=="eventos" %} class="active" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                      <a href="{{ path('eventos_index') }}" 
+                                      {% if namevar!="eventos" %} 
+                                      onmouseover="this.style.color = '{{ colormenu1 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                      >EVENTOS</a>
+                                 </li>
+
+                                 <li {% if namevar=="proveedores" %} class="active2" {% endif %} style="border-left:1px solid #A0A0A0;">
+                                      <a href="{{ path('proveedores_index') }}"
+                                      {% if namevar!="proveedores" %} 
+                                      onmouseover="this.style.color = '{{ colormenu2 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                      >PROVEEDORES</a>
+                                  </li>
+
+
+                                  <li {% if namevar=="asociados" %} class="active3" {% endif %} style="border-left:1px solid #A0A0A0; border-right:1px solid #A0A0A0;">
+                                      <a href="{{ path('asociados_index') }}"
+                                      {% if namevar!="asociados" %} 
+                                      onmouseover="this.style.color = '{{ colormenu3 }}'" onmouseout="this.style.color = '{{ colorbasemenu }}'"  
+                                      {% endif %}
+                                      >ASOCIADOS</a>
+                                  </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav> 
+                {% endif %} 
+            {% endif %} 
+                </div>
+    {% endif %}
+    {% endif %}
+    
+    
+    {% if namevar == "inicio" %}
+    {% if app.user and is_granted('ROLE_ADMINISTRATOR') %}
+    {% if app.user.superadmin == 1 %}
+    <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
+    <div class="col-xs-1 col-sm-0 col-md-1 col-lg-2">&nbsp;</div>
+    <div class="col-xs-10 col-sm-12 col-md-10 col-lg-8">
+        {% if app.user.superadministrador == 1 %}
+
+        <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2"><a href="{{ path('eventos_index') }}"><img src="{{ asset('images/menu_1.png') }}" class="img-responsive"></a></div>
+
+        <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2"><a href="{{ path('proveedores_index') }}"><img src="{{ asset('images/menu_2.png') }}" class="img-responsive"></a><a href="{{ path('eventos_index') }}"></a></div>
+
+        <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2"><a href="{{ path('asociados_index') }}"><img src="{{ asset('images/menu_3.png') }}" class="img-responsive"></a><a href="{{ path('eventos_index') }}"></a></div>
+
+        <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2"><a href="{{ path('administrador_index') }}"><img src="{{ asset('images/menu_4.png') }}" class="img-responsive"></a><a href="{{ path('eventos_index') }}"></a></div>
+
+        <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2"><a href="{{ path('eventosempleados_index') }}"><img src="{{ asset('images/menu_6.png') }}" class="img-responsive"></a><a href="{{ path('eventos_index') }}"></a></div>
+
+        <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2"><a href="{{ path('logs_index') }}"><img src="{{ asset('images/menu_7.png') }}" class="img-responsive"></a><a href="{{ path('eventos_index') }}"></a></div>
+        {% else %}
+        {% if app.user.menuEventos == 1 %}
+        <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2"><a href="{{ path('eventos_index') }}"><img src="{{ asset('images/menu_1.png') }}" class="img-responsive"></a></div>
+        {% endif %}
+        {% if app.user.menuProveedores == 1 %}
+        <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2"><a href="{{ path('proveedores_index') }}"><img src="{{ asset('images/menu_2.png') }}" class="img-responsive"></a><a href="{{ path('eventos_index') }}"></a></div>
+        {% endif %}
+        {% if app.user.menuAsociados == 1 %}
+        <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2"><a href="{{ path('asociados_index') }}"><img src="{{ asset('images/menu_3.png') }}" class="img-responsive"></a><a href="{{ path('eventos_index') }}"></a></div>
+        {% endif %}
+        {% if app.user.menuAdministradores == 1 %}
+        <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2"><a href="{{ path('administrador_index') }}"><img src="{{ asset('images/menu_4.png') }}" class="img-responsive"></a><a href="{{ path('eventos_index') }}"></a></div>
+        {% endif %}
+        {% if app.user.menuEventosinternos == 1 %}
+        <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2"><a href="{{ path('eventosempleados_index') }}"><img src="{{ asset('images/menu_6.png') }}" class="img-responsive"></a><a href="{{ path('eventos_index') }}"></a></div>
+        {% endif %}
+        {% if app.user.menuRegistro == 1 %}
+        <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2"><a href="{{ path('logs_index') }}"><img src="{{ asset('images/menu_7.png') }}" class="img-responsive"></a><a href="{{ path('eventos_index') }}"></a></div>
+        {% endif %}
+        {% endif %}
+    </div>
+    <div class="col-xs-1 col-sm-0 col-md-1 col-lg-2">&nbsp;</div>
+    <div style="clear: both;"></div>
+    {% elseif app.user.superadmin == 0 %}
+
+    <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
+    <div class="col-xs-0 col-sm-2 col-md-3 col-lg-4">&nbsp;</div>
+    <div class="col-xs-12 col-sm-8 col-md-6 col-lg-4">
+
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4"><a href="{{ path('eventos_index') }}"><img src="{{ asset('images/menu_1.png') }}" class="img-responsive"></a></div>
+
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4"><a href="{{ path('proveedores_index') }}"><img src="{{ asset('images/menu_2.png') }}" class="img-responsive"></a><a href="{{ path('eventos_index') }}"></a></div>
+
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4"><a href="{{ path('asociados_index') }}"><img src="{{ asset('images/menu_3.png') }}" class="img-responsive"></a><a href="{{ path('eventos_index') }}"></a></div>
+    </div>
+    <div class="col-xs-0 col-sm-2 col-md-3 col-lg-4">&nbsp;</div>
+    <div style="clear: both;"></div>
+
+
+    {% endif %}
+    {% endif %}
+    {% endif %}
+
+
+        {% block header %}
+
+        {% endblock %}
+        {% if app.user and is_granted('ROLE_USER') %}  
+
+        <div class="container-fluid">           
+                <div class="col-xs-1 col-sm-2 col-md-3 col-lg-4">&nbsp;</div>
+                <div class="container col-xs-10 col-sm-8 col-md-6 col-lg-4" style="margin: 0px auto; padding-top: 20px;">
+                    {{ include('messages.html.twig') }}                   
+                </div>
+                </div>           
+        </div>
+        {% elseif app.user and is_granted('ROLE_ADMINISTRATOR') %} 
+        <div class="container-fluid">           
+                <div class="col-xs-1 col-sm-2 col-md-3 col-lg-4">&nbsp;</div>
+                <div class="container col-xs-10 col-sm-8 col-md-6 col-lg-4" style="margin: 0px auto;">
+                    {{ include('messages.html.twig') }}                   
+                </div>
+                </div>           
+        </div>
+        {% elseif app.user and is_granted('ROLE_ADMIN') %} 
+        <div class="container-fluid">           
+                <div class="col-xs-1 col-sm-2 col-md-3 col-lg-4">&nbsp;</div>
+                <div class="container col-xs-10 col-sm-8 col-md-6 col-lg-4" style="margin: 0px auto;">
+                    {{ include('messages.html.twig') }}                   
+                </div>
+                </div>           
+        </div>
+        {% else %} 
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <div class="container-fluid">           
+                <div class="col-xs-1 col-sm-2 col-md-3 col-lg-4">&nbsp;</div>
+                <div class="container col-xs-10 col-sm-8 col-md-6 col-lg-4" style="margin: 0px auto;">
+                    {{ include('messages.html.twig') }}                   
+                </div>
+                </div>           
+        </div>
+        {% endif %} 
+        <div class="container-fluid">
+            {% block body %}
+                <div class="row">
+                    <div id="main" class="col-sm-12">                       
+                        {% block main %}                        
+                        
+                        {% endblock %}
+                    </div>
+                </div>
+            {% endblock %}
+        </div>
+        {% block footer %}
+        <!-- <footer class="footer">
+            <div class="container">
+              <p class="text-muted"><img src="{{ asset('images/logo-coopidrogas-peq-min.png') }}"> / {{ "now"|date("Y") }}</p>
+            </div>
+        </footer> -->
+        {% endblock %}
+        {% if namevar != "inicio" %}
+        <script type="text/javascript">
+            setLi();
+            function setLi(){
+                {% if app.user and is_granted('ROLE_ADMINISTRATOR') %}
+                {% if app.user.superadmin == 1 %} 
+                  var basemenu = 748;
+                {% else %} 
+                  var basemenu = 380;
+                {% endif %}
+                {% elseif app.user and is_granted('ROLE_USER') %}
+                  var basemenu = 380;
+                {% endif %} 
+                var newmargin = ($( window ).width() - basemenu) / 2;
+                if($( window ).width() <= basemenu){
+                    $( "#menuLi" ).css('margin-left', '0px');
+                }else{
+                    $( "#menuLi" ).css('margin-left', newmargin + 'px');  
+                }
+            }
+            $( window ).resize(function() {
+                setLi();
+            });
+        </script>
+        {% endif %}
+    </body>
+</html>

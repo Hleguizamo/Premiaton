@@ -1,0 +1,5 @@
+<td align="center">{% if result.tipoUsuario == 0 %}Administrador{% else %}Usuario{% endif %}</td>
+<td>{{ result.usuario }}</td>
+<td>{{ result.accion|raw }}</td>
+<td>{{ result.ip }}</td>
+<td align="center">{{ result.fecha | date("Y-m-d H:i:s") }}</td>

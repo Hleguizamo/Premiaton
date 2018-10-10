@@ -1,0 +1,771 @@
+{% extends 'basePantallaGanadores.html.twig' %}
+{% block body %}
+    
+
+    {% if proveedores is defined %}
+    <script type="text/javascript">
+      window.idEventoJs;
+      window.cantidadProveedoresJs;
+
+      
+      var counterInscripciones = 0;
+      function resetInstrucciones(){
+        var table = document.getElementById("tablaUsuarios");
+        for(x = 0; x < counterInscripciones; x++ ){
+            table.deleteRow(2);
+        }
+      }
+      function resetInstruccionesSub(){
+        var table = document.getElementById("tablaUsuarios");
+        for(x = 0; x < counterInscripciones; x++ ){
+            table.deleteRow(2);
+        }
+      }
+      
+      //--------Ganadores
+
+      var counterGanadores = 0;
+      function resetGanadores(){
+        var table2 = document.getElementById("tablaGanadoresScreen");
+
+        var counter = document.getElementById("tablaGanadoresScreen").rows.length;
+
+        for(x = 0; x < counter; x++ ){
+            try {
+                table2.deleteRow(2);
+            }catch(err) {
+                //
+            }
+        }
+      }
+      function resetGanadoresEmpleados(){
+        var table = document.getElementById("tablaGanadoresEmpleados");
+        for(x = 0; x < counterGanadores; x++ ){
+            table.deleteRow(2);
+        }
+      }
+      var intervalo;
+
+      function startIntervalo(idVar, mostrarvalor, premio, valor){
+        resetGanadores();
+        if(mostrarvalor == 0){
+          document.getElementById("premiodiv").innerHTML = premio;
+        }else{
+          document.getElementById("premiodiv").innerHTML = premio + ' / $ ' + valor;
+        }
+        loadGanadores(idVar, mostrarvalor, premio, valor);
+        clearInterval(intervalo);
+        intervalo = setInterval(function(){ loadGanadores(idVar, mostrarvalor, premio, valor); }, 60000);
+      }
+
+      function loadGanadores(idVar, mostrarvalor, premio, valor){
+        resetGanadores();
+
+        document.getElementById("loadingDiv3").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Actualizando Ganadores';
+        document.getElementById("loadingDivScreen").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Actualizando Ganadores';        
+
+        var urlvar = '{{ url("eventos_cargarGanadores", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': idVar
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response") && data.response === "success"){
+                    if(data.hasOwnProperty("ganadores")){
+
+                      var table2 = document.getElementById("tablaGanadoresScreen");
+
+                      counterGanadores = data.total;
+                      //alert(counterGanadores);
+                      var y = 0;
+                      if(counterGanadores > 0){
+                        for(var x = 0; x < counterGanadores; x++){                             
+                         // proveedores[data.proveedores[x].id] = 1;
+                          y = x+2;
+                          var row2 = table2.insertRow(y);
+
+                          var cell2_1 = row2.insertCell(0);
+                          var cell2_2 = row2.insertCell(1);
+                          var cell2_3 = row2.insertCell(2);
+                          var cell2_4 = row2.insertCell(3);
+                          var cell2_5 = row2.insertCell(4);
+
+                          cell2_1.innerHTML = x+1;
+                          cell2_2.innerHTML = data.ganadores[x].proveedor;
+                          cell2_3.innerHTML = data.ganadores[x].nit;
+                          cell2_4.innerHTML = data.ganadores[x].asociado;
+                          cell2_5.innerHTML = data.ganadores[x].fecha + " " + data.ganadores[x].hora;
+
+                        } 
+                      }
+
+                      //-----------------------------
+                      if(data.aleatoriosProveedores.length > 0){
+                        //document.getElementById("divGanadoresAP").innerHTML = "Último ganador sorteo aleatorio proveedores: " + data.aleatoriosProveedores[0].nombre + " - " + data.aleatoriosProveedores[0].fecha + " " + data.aleatoriosProveedores[0].hora;
+                      }
+                      //-----------------------------
+                      if(data.aleatoriosAsociados.length > 0){
+                        //document.getElementById("divGanadoresAA").innerHTML = "Último ganador sorteo aleatorio asociados: " + data.aleatoriosAsociados[0].nombre + " - " + data.aleatoriosAsociados[0].fecha + " " + data.aleatoriosAsociados[0].hora;
+                      }
+
+
+                      document.getElementById("loadingDiv3").innerHTML = '';  
+                      document.getElementById("loadingDivScreen").innerHTML = '';  
+
+                    }else{
+                        console.log("POSTS NOT FOUND");
+                    }
+                }else{
+                  loadGanadores(idVar);
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                loadGanadores(idVar);
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+      //-----------------------------------------------------------------------------------
+      function loadGanadoresSub(idVar){
+        resetGanadores();
+        document.getElementById("loadingDiv3").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Cargando Ganadores';
+        var urlvar = '{{ url("subeventos_cargarGanadores", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': idVar
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response") && data.response === "success"){
+                    if(data.hasOwnProperty("ganadores")){
+                      var table = document.getElementById("tablaGanadores");
+                      counterGanadores = data.total;
+                      var y = 0;
+                      for(var x = 0; x < data.total; x++){                             
+                       // proveedores[data.proveedores[x].id] = 1;
+                        y = x+2;
+                        var row = table.insertRow(y);
+                        var cell_1 = row.insertCell(0);
+                        var cell_2 = row.insertCell(1);
+                        var cell_3 = row.insertCell(2);
+                        var cell_4 = row.insertCell(3);
+                        var cell_5 = row.insertCell(4);
+                        var cell_6 = row.insertCell(5);
+                        var cell_7 = row.insertCell(6);
+                        var cell_8 = row.insertCell(7);
+
+                        cell_1.innerHTML = x+1;
+                        cell_2.innerHTML = data.ganadores[x].proveedor;
+                        cell_3.innerHTML = data.ganadores[x].nit;
+                        cell_4.innerHTML = data.ganadores[x].asociado;
+                        cell_5.innerHTML = data.ganadores[x].codigo;
+                        cell_6.innerHTML = data.ganadores[x].nombreDrogueria;
+                        cell_7.innerHTML = data.ganadores[x].fecha;
+                        cell_8.innerHTML = data.ganadores[x].hora;
+                      } 
+                      document.getElementById("loadingDiv3").innerHTML = '';                           
+                    }else{
+                        console.log("POSTS NOT FOUND");
+                    }
+                }else{
+                  loadGanadores(idVar);
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                loadGanadores(idVar);
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+      //-----------------------------------------------------------------------------------
+      function loadGanadoresEmpleados(idVar){
+        resetGanadoresEmpleados();
+        document.getElementById("loadingDiv6").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Cargando Ganadores';
+        var urlvar = '{{ url("eventosempleados_cargarGanadores", { "id": "1" }) }}';
+        $.ajax({
+            method: "POST",
+            url: urlvar,
+            data: { 
+                'idEvento': idVar
+            },
+            dataType: 'json',
+            success: function(data){                    
+                if(data.hasOwnProperty("response") && data.response === "success"){
+                    if(data.hasOwnProperty("ganadores")){
+                      var table = document.getElementById("tablaGanadoresEmpleados");
+                      counterGanadores = data.total;
+                      var y = 0;
+                      for(var x = 0; x < data.total; x++){                             
+                       // proveedores[data.proveedores[x].id] = 1;
+                        y = x+2;
+                        var row = table.insertRow(y);
+                        var cell_1 = row.insertCell(0);
+                        var cell_2 = row.insertCell(1);
+                        var cell_3 = row.insertCell(2);
+                        var cell_4 = row.insertCell(3);
+                        var cell_5 = row.insertCell(4);
+                        var cell_6 = row.insertCell(5);
+                        var cell_7 = row.insertCell(6);
+                        var cell_8 = row.insertCell(7);
+                        var cell_9 = row.insertCell(8);
+                        var cell_10 = row.insertCell(9);
+                        var cell_11 = row.insertCell(10);
+
+
+                        cell_1.innerHTML = x+1;
+                        cell_2.innerHTML = data.ganadores[x].centro;
+                        cell_3.innerHTML = data.ganadores[x].codigo;
+                        cell_4.innerHTML = data.ganadores[x].nombre;
+                        cell_5.innerHTML = data.ganadores[x].cedula;
+                        cell_6.innerHTML = data.ganadores[x].direccion;
+                        cell_7.innerHTML = data.ganadores[x].departamento;
+                        cell_8.innerHTML = data.ganadores[x].ciudad;
+                        cell_9.innerHTML = data.ganadores[x].telefono;
+                        cell_10.innerHTML = data.ganadores[x].fecha;
+                        cell_11.innerHTML = data.ganadores[x].hora;
+                      } 
+                      document.getElementById("loadingDiv6").innerHTML = '';                           
+                    }else{
+                        console.log("POSTS NOT FOUND");
+                    }
+                }else{
+                  //loadGanadoresEmpleados(idVar);
+                  return;
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                //loadGanadoresEmpleados(idVar);
+                if(jqXHR.status === 405)
+                {
+                    console.error("METHOD NOT ALLOWED!");
+                    
+                }
+            }
+        });
+      }
+    </script>
+    <style type="text/css">
+    .modal.modal-wide .modal-dialog {
+      width: 98%;
+    }
+    .modal-wide .modal-body {
+      
+    }
+
+    #tallModal .modal-body #inscripcionesModal { margin-bottom: 0px; }
+</style>
+
+    <!-- Modal Ganadores -->
+    <div id="tallModal" class="modal modal-wide fade" role="dialog" style="left: -20px; top: -10px;">
+      <div class="modal-dialog">
+        <!-- Modal Upload -->
+        <div class="modal-content">          
+          <div class="modal-body">
+              <div id="ganadoresDiv" style="background-size:cover; background-position:center; height:560px;">
+              <div style="position: absolute; border:0px solid #000000; width: 70%; height: 235px; bottom: 56px; left: 14.5%; overflow-y: auto; overflow-x: hidden; background-color: #FFFFFF; border-radius: 5px 5px 5px 5px; border:1px solid #CCCCCC">
+
+              <table id="tablaGanadoresScreen" class="table table-bordered table-condensed table-hover table-striped" bg>
+                <thead>
+                  <tr>
+                    <th align="center" colspan="6" bgcolor="#672682">
+                    <div id="premiodiv" style="text-align: center; background-color: #672682; color: #FFFFFF; font-size: 16px; padding: 1px; font-family: Arial;"></div>
+                    <center>
+                    
+                    <div id="loadingDivScreen" style="background-color: #672682; padding: 1px; color: #FFFFFF; font-family: Arial;"><i class="fa fa-spinner" aria-hidden="true"></i>
+                    </div>
+                    </center>
+                    </th>
+                  </tr>
+                  <tr bgcolor="#FFFFFF">
+                    <th align="center">#</th>
+                    <th align="center">Proveedor</th>
+                    <th align="center">Nit</th>
+                    <th align="center">Asociado</th>
+                    <th align="center">Fecha</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                    <td colspan="6"></td>
+                  </tr>
+
+                </tbody>
+              </table>
+              <div style="height: 5px; padding: 5px;">&nbsp;</div>
+              <div id="divGanadoresAP">&nbsp;</div>
+              <div style="height: 5px; padding: 5px;">&nbsp;</div>
+              <div id="divGanadoresAA">&nbsp;</div>
+
+              </div>
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--  __________________________________________________________  -->
+
+   
+    <!-- Modal Ganadores -->
+    <div id="ganadoresModal" class="modal modal-wide fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal Ganadores -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"><i class="fa fa-list-ul" aria-hidden="true"></i> Lista de Ganadores del Evento</h4>
+          </div>
+          <div class="modal-body">
+              <table id="tablaGanadores" class="table table-bordered table-condensed table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th align="center" colspan="8"><center>GANADORES <div id="loadingDiv3" style="background-color: #FFFFFF; padding: 10px;"><i class="fa fa-spinner" aria-hidden="true"></i></div></center></th>
+                  </tr>
+                  <tr>
+                    <th align="center">#</th>
+                    <th align="center">Proveedor</th>
+                    <th align="center">Nit</th>
+                    <th align="center">Asociado</th>
+                    <th align="center">Código</th>
+                    <th align="center">Nombre Droguería</th>
+                    <th align="center">Fecha</th>
+                    <th align="center">Hora</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                    <td colspan="8"></td>
+                  </tr>
+
+                </tbody>
+              </table>
+          </div>
+
+          <div class="modal-footer" style="text-align:right;">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% endif %}
+  </div>
+        {% set counter1 = (startPagination + 1)  %}
+        <div id="divTable" style="width: 100%; height: 100%;">
+        <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="4">
+            <tr>
+              <td align="center" valign="middle">                
+                {% for result in resultset %}
+                    {% include bundlevar~':_fieldsPantallaGanadores.html.twig' %}
+                {% set counter1 = counter1 + 1%}
+                {% endfor %}
+              </td>
+            </tr>
+        </table>
+        </div>
+    <script>
+        var height = $( document ).height();
+        document.getElementById("divTable").style.height = height + "px";
+        $('#tallModal').on('hidden', function () {
+            clearInterval(intervalo);
+        })
+        function confirmdelete(delvar){            
+            swal({
+              title: "Eliminar",
+              text: "¿Realmente desea Eliminar el registro?",
+              type: "error",
+              showCancelButton: true,
+              cancelButtonText: "Cancelar",
+              confirmButtonClass: "btn-danger",
+              confirmButtonText: "Eliminar",
+              closeOnConfirm: false
+            },
+            function(){           
+              window.location.href=delvar;
+            });
+        }
+        function confirmarchivar(delvar){            
+            swal({
+              title: "Archivar",
+              text: "¿Realmente desea Archivar el registro?",
+              type: "error",
+              showCancelButton: true,
+              cancelButtonText: "Cancelar",
+              confirmButtonClass: "btn-danger",
+              confirmButtonText: "Archivar",
+              closeOnConfirm: false
+            },
+            function(){           
+              window.location.href=delvar;
+            });
+        }
+
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip(); 
+        });
+        
+        function sendExcel(idvar){
+          document.getElementById("idvar").value = idvar;
+          document.getElementById("formExcel").submit(); 
+        }
+        {% if advancedsearch == "true" %}
+        $(function () {
+                $('#desde').datetimepicker({                    
+          locale: 'es',
+          format: 'YYYY-MM-DD',
+                });
+            });
+        $(function () {
+                $('#hasta').datetimepicker({                    
+          locale: 'es',
+          format: 'YYYY-MM-DD',
+                });
+            });
+        {% endif %}
+        function sendPdf(idvar){
+          document.getElementById("idvarpdf").value = idvar;
+          document.getElementById("formPdf").submit(); 
+        }
+
+        function validarExcel(objvar){
+          var file = objvar.files[0];
+          var tmp1 = objvar.value.split(".");
+          var boovar = false;
+
+          if(tmp1[1] != "xls" && tmp1[1] != "xlsx"){
+            boovar = true;
+          }
+
+          if(boovar == true){
+              objvar.value = "";
+              swal(
+                '',
+                'Error: El Archivo debe estar en formato Excel',
+                'warning'
+              );
+          }
+        }
+        function resetChecksProveedores(){
+          proveedores.forEach(function(currentValue,index,arr){
+            document.getElementById("list_" + index).checked = false;
+            proveedores[index] = 0;
+          })
+        }
+        function resetChecksProveedoresSub(){
+          proveedores.forEach(function(currentValue,index,arr){
+            document.getElementById("list_" + index).checked = false;
+            proveedores[index] = 0;
+          })
+        }
+        function setChecksProveedores(){
+          proveedores.forEach(function(currentValue,index,arr){
+            if(currentValue == 0){
+              document.getElementById("list_" + index).checked = false;
+            }else{
+              document.getElementById("list_" + index).checked = true;
+            }
+          })
+        }
+        function proveedorAleatorio(){
+          document.getElementById("proveedorAleatorioDiv").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br><span style="font-size:14px; color:#000000;"><b>Cargando Proveedor Aleatorio</b></span><br><br><br><br>';
+          var urlvar = '{{ url("eventos_cargarAleatorio", { "id": "1" }) }}';
+          $.ajax({
+              method: "POST",
+              url: urlvar,
+              data: { 
+                  'idvar': '1',
+                  'idEvento': window.idEventoJs,
+              },
+              dataType: 'json',
+              success: function(data){ 
+                  if(data.hasOwnProperty("response") && data.response === "success"){
+                      document.getElementById("proveedorAleatorioDiv").innerHTML = data.ganadores[0].nombre + '<br><img src="{{asset("images/proveedores/") }}' + data.ganadores[0].imagen + '" style="max-height:220px;" class="img-respnsive" ><br><br>';
+                  }else{
+                    // proveedorAleatorio();
+                    return;
+                  }
+              },
+              error: function(jqXHR, exception)
+              {
+                  // proveedorAleatorio();
+                  if(jqXHR.status === 405)
+                  {
+                      console.error("METHOD NOT ALLOWED!");
+                      
+                  }
+              }
+          });
+          $('#proveedorAleatorioModal').modal({
+                show: 'true'
+          });
+        }
+        function asociadoAleatorio(){
+          document.getElementById("asociadoAleatorioDiv").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br><span style="font-size:14px; color:#000000;"><b>Cargando Proveedor Aleatorio</b></span><br><br><br><br>';
+          var urlvar = '{{ url("eventos_cargarAleatorio", { "id": "2" }) }}';
+          $.ajax({
+              method: "POST",
+              url: urlvar,
+              data: { 
+                  'idvar': '2',
+                  'idEvento': window.idEventoJs,
+              },
+              dataType: 'json',
+              success: function(data){ 
+                  if(data.hasOwnProperty("response") && data.response === "success"){
+                      document.getElementById("asociadoAleatorioDiv").innerHTML = "Asociado: " + data.ganadores[0].nombreAsociado + '<br>Nombre Droguería: ' + data.ganadores[0].nombreDrogueria + '<br>Nit: ' + data.ganadores[0].nit + '<br>Código: ' + data.ganadores[0].codigo + '<br><br><br>';
+                  }else{
+                    // asociadoAleatorio();
+                    return;
+                  }
+              },
+              error: function(jqXHR, exception)
+              {
+                  // asociadoAleatorio();
+                  if(jqXHR.status === 405)
+                  {
+                      console.error("METHOD NOT ALLOWED!");
+                      
+                  }
+              }
+          });
+
+          $('#asociadoAleatorioModal').modal({
+                show: 'true'
+            });
+        }
+        var counterFields = 0;
+        function addField(typeVar){
+          counterFields ++;
+          $("#completeSearchCounter").val(counterFields);
+
+          var selectedOption = $("#fieldType").prop('selectedIndex');
+          //alert(types[selectedOption]);
+
+          var selectedOption2 = $( "#fieldType option:selected" ).text();
+          var selectField = '<input id="fieldTypeAux_' + counterFields + '" name="fieldTypeAux_' + counterFields + '" type="text" class="form-control" style="width:30%" value="' + selectedOption2 + '" readonly="readonly"> <input type="hidden" name="fieldType_' + counterFields + '" id="fieldType_' + counterFields + '" value="' + fields[selectedOption] + '"> ';
+
+
+          if(types[selectedOption] == "date"){
+            var inputField = '<input id="findField_' + counterFields + '" name="findField_' + counterFields + '" type="text" class="form-control" style="width:40%" onClick="startCalendar(this, ' + counterFields + ')" onBlur="restoreButton(' + counterFields + ')"><span class="input-group-btn">';
+
+          }else{
+            var inputField = '<input id="findField_' + counterFields + '" name="findField_' + counterFields + '" type="text" class="form-control" style="width:40%" required="required"><span class="input-group-btn"> ';
+          }
+
+          $( "#setFieldDiv" ).append( '<div id="setFieldDivLine_' + counterFields + '" class="input-group" style="margin-bottom:6px; background-color:#E5E5E5; ">' + selectField + '  <select id="fieldQueryAux_' + counterFields + '" name="fieldQueryAux_' + counterFields + '" class="form-control" style="width:30%"><option value="CONTIENE">CONTIENE</option> <option value="ESIGUAL">ES IGUAL</option> <option value="NOESIGUAL">NO ES IGUAL</option> <option value="MENORQUE">MENOR QUE</option> <option value="MAYORQUE">MAYOR QUE</option> </select> ' + inputField + ' <button id="buttonFields_' + counterFields + '" class="btn btn-primary" type="button" onClick="removeField(' + counterFields + ')"><i class="fa fa-minus-square" aria-hidden="true"></i></button>    </span>  </div>' );
+
+          //var selectedOption = $( "#fieldType option:selected" ).text();
+          if(types[selectedOption] == "date"){
+            registrarDateTime(counterFields);
+          }
+          
+          $('#fieldTypeAux_' + counterFields + ' option:eq(' + selectedOption + ')').attr('selected', 'selected')
+        }
+        function removeField(idvar){
+          $( "#setFieldDivLine_" + idvar ).remove();
+        }
+        function registrarDateTime(counterFields){
+          //alert(counterFields);
+          $('#findField_' + counterFields).datetimepicker({                    
+          locale: 'es',
+          format: 'YYYY-MM-DD',
+                });
+        }
+        function startCalendar(objvar, counterFields){
+          $('#buttonFields_' + counterFields).hide();
+          $('#' + objvar.id).datetimepicker('show');
+        }
+        function restoreButton(counterFields){
+          $('#buttonFields_' + counterFields).show();
+        } 
+
+        function setImagenGanadores(imageVar){
+          var imageUrl = "{{ asset('images/eventos/') }}" + imageVar;
+           $('#ganadoresDiv').css('background-image', "url(" + imageUrl + ")");
+        }
+        setTimeout(function(){ document.getElementById("btnStart").click(); }, 1000);
+        
+        
+
+        </script>
+
+
+        <!-- Efectos -->
+
+
+        <script type="text/javascript">
+          //<![CDATA[
+          var bits=500; // cuantos bits
+          var intensity=10; // que tan "poderosa" es la explosión. (recomendado entre 3 y 10)
+          var speed=20; // rapidez (a menor numero, mas rapido)
+          var colours=new Array("#672682", "#1E9CD7", "#E40E7E", "#3AAB35", "#F0900B", "#ED540D");
+          //azul rojo verde purpura cyan, naranjo
+
+          var dx, xpos, ypos, bangheight;
+          var Xpos=new Array();
+          var Ypos=new Array();
+          var dX=new Array();
+          var dY=new Array();
+          var decay=new Array();
+          var colour=0;
+          var swide=800;
+          var shigh=600;
+
+          function write_fire() {
+          var b, s;
+          b=document.createElement("div");
+          s=b.style;
+          s.position="absolute";
+          b.setAttribute("id", "bod");
+          //document.body.appendChild(b);
+          //document.body.appendChild(b);
+          document.getElementById('ganadoresDiv').appendChild(b);
+          set_scroll();
+          set_width();
+          b.appendChild(div("lg", 3, 4));
+          b.appendChild(div("tg", 2, 3));
+          for (var i=0; i<bits; i++) b.appendChild(div("bg"+i, 1, 1));
+          }
+          function div(id, w, h) {
+          var d=document.createElement("div");
+          d.style.position="absolute";
+          d.style.overflow="hidden";
+          d.style.width=w+"px";
+          d.style.height=h+"px";
+          d.setAttribute("id", id);
+          return (d);
+          }
+          function bang() {
+          var i, X, Y, Z, A=0;
+          for (i=0; i<bits; i++) {
+          X=Math.round(Xpos[i]);
+          Y=Math.round(Ypos[i]);
+          Z=document.getElementById("bg"+i).style;
+          if((X>=0)&&(X<swide)&&(Y>=0)&&(Y<shigh)) {
+          Z.left=X+"px";
+          Z.top=Y+"px";
+          }
+          if ((decay[i]-=1)>14) {
+          Z.width="3px";
+          Z.height="3px";
+          }
+          else if (decay[i]>7) {
+          Z.width="2px";
+          Z.height="2px";
+          }
+          else if (decay[i]>3) {
+          Z.width="1px";
+          Z.height="1px";
+          }
+          else if (++A) Z.visibility="hidden";
+          Xpos[i]+=dX[i];
+          Ypos[i]+=(dY[i]+=1.25/intensity);
+          }
+          if (A!=bits) setTimeout("bang()", speed);
+          }
+
+          function stepthrough() {
+          var i, Z;
+          var oldx=xpos;
+          var oldy=ypos;
+          xpos+=dx;
+          ypos-=4;
+          if (ypos<bangheight||xpos<0||xpos>=swide||ypos>=shigh) {
+          for (i=0; i<bits; i++) {
+          Xpos[i]=xpos;
+          Ypos[i]=ypos;
+          dY[i]=(Math.random()-0.5)*intensity;
+          dX[i]=(Math.random()-0.5)*(intensity-Math.abs(dY[i]))*1.25;
+          decay[i]=Math.floor((Math.random()*16)+16);
+          Z=document.getElementById("bg"+i).style;
+          Z.backgroundColor=colours[colour];
+          Z.visibility="visible";
+          }
+          bang();
+          launch();
+          }
+          document.getElementById("lg").style.left=xpos+"px";
+          document.getElementById("lg").style.top=ypos+"px";
+          document.getElementById("tg").style.left=oldx+"px";
+          document.getElementById("tg").style.top=oldy+"px";
+          }
+          function launch() {
+          colour=Math.floor(Math.random()*colours.length);
+          xpos=Math.round((0.5+Math.random())*swide*0.5);
+          ypos=shigh-5;
+          dx=(Math.random()-0.5)*4;
+          bangheight=Math.round((0.5+Math.random())*shigh*0.4);
+          document.getElementById("lg").style.backgroundColor=colours[colour];
+          document.getElementById("tg").style.backgroundColor=colours[colour];
+          }
+          window.onscroll=set_scroll;
+          function set_scroll() {
+          var sleft, sdown;
+          if (typeof(self.pageYOffset)=="number") {
+          sdown=self.pageYOffset;
+          sleft=self.pageXOffset;
+          }
+          else if (document.body.scrollTop || document.body.scrollLeft) {
+          sdown=document.body.scrollTop;
+          sleft=document.body.scrollLeft;
+          }
+          else if (document.documentElement && (document.documentElement.scrollTop || document.documentElement.scrollLeft)) {
+          sleft=document.documentElement.scrollLeft;
+          sdown=document.documentElement.scrollTop;
+          }
+          else {
+          sdown=0;
+          sleft=0;
+          }
+          var s=document.getElementById("bod").style;
+          s.top=sdown+"px";
+          s.left=sleft+"px";
+          }
+          window.onresize=set_width;
+          function set_width() {
+          if (typeof(self.innerWidth)=="number") {
+          swide=self.innerWidth;
+          shigh=self.innerHeight;
+          }
+          else if (document.documentElement && document.documentElement.clientWidth) {
+          swide=document.documentElement.clientWidth;
+          shigh=document.documentElement.clientHeight;
+          }
+          else if (document.body.clientWidth) {
+          swide=document.body.clientWidth;
+          shigh=document.body.clientHeight;
+          }
+          }
+          window.onload=function() { if (document.getElementById) {
+          set_width();
+          write_fire();
+          launch();
+          setInterval('stepthrough()', speed);
+          }}
+          //]]>
+          </script>
+
+                  
+{% endblock %}
