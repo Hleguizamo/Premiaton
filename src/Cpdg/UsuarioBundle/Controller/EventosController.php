@@ -13,7 +13,7 @@ use Cpdg\UsuarioBundle\Form\EventosType;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
- 
+
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -63,8 +63,8 @@ class EventosController extends Controller
         $excel = "false";
         $pdf = "false";
         $pdfone = "false";
-        $advancedsearch = "false"; 
-        $completeSearch = "true";        
+        $advancedsearch = "false";
+        $completeSearch = "true";
         $cantidadPorPagina = 20;
         $startPagination = ($page - 1) * $cantidadPorPagina;
         //----------------------------------
@@ -73,7 +73,7 @@ class EventosController extends Controller
         $etiquetas[] = "Fecha Inicio";
         $etiquetas[] = "Hora Inicio";
         $etiquetas[] = "Fecha Fin";
-        $etiquetas[] = "Hora Fin";        
+        $etiquetas[] = "Hora Fin";
         $etiquetas[] = "Inscritos";
         $etiquetas[] = "Ganadores";
         //----------------------------------
@@ -86,7 +86,7 @@ class EventosController extends Controller
             for($y = 1; $y <= intval($data["completeSearchCounter"]); $y ++){
                 if(isset($data["findField_".$y])){
                     $campoexp = explode(".", $data["fieldType_".$y]);
-                    
+
                     if($data["fieldQueryAux_".$y] == "CONTIENE"){
                         $consulta->orWhere($data["fieldType_".$y].' LIKE :'.$campoexp[1].$y)->setParameter($campoexp[1].$y, '%'.$data["findField_".$y].'%');
                     }elseif($data["fieldQueryAux_".$y] == "ESIGUAL"){
@@ -98,7 +98,7 @@ class EventosController extends Controller
                     }elseif($data["fieldQueryAux_".$y] == "MAYORQUE"){
                         $consulta->orWhere($data["fieldType_".$y].' > :'.$campoexp[1].$y)->setParameter($campoexp[1].$y, $data["findField_".$y]);
                     }
-                    
+
                 }
                 $x++;
             }
@@ -124,15 +124,15 @@ class EventosController extends Controller
             'edit' => $edit,
             'delete' => $delete,
             'new' => $new,
-            'etiquetas' => $etiquetas,            
+            'etiquetas' => $etiquetas,
             'excel' => $excel,
             'pdf' => $pdf,
             'pdfone' => $pdfone,
-            'advancedsearch' => $advancedsearch,            
-            'startPagination' => $startPagination,  
+            'advancedsearch' => $advancedsearch,
+            'startPagination' => $startPagination,
             'completeSearch' => $completeSearch,
-            'completeSearchFields' => $this->campos, 
-            'proveedores' => $proveedores,          
+            'completeSearchFields' => $this->campos,
+            'proveedores' => $proveedores,
         ));
     }
 
@@ -155,7 +155,7 @@ class EventosController extends Controller
                         ->andWhere('e.idProveedor = :idProveedor')->setParameter('idProveedor', $userid)
                         ->orderBy('e.fecha, e.hora','desc')
                         ->getQuery()->execute();
-           
+
 
             foreach ($eventosInscripciones as $eventosInscripcione) {
                $inscripciones[$x]["id"] = $eventosInscripcione->getId();
@@ -175,9 +175,9 @@ class EventosController extends Controller
                $inscripciones[$x]["hora"] = $eventosInscripcione->getHora()->format('H:i:s');;
                $x++;
             }
- 
+
             $serializer = new Serializer($normalizers, $encoders);
-            
+
             $response = new JsonResponse();
             $response->setStatusCode(200);
             $response->setData(array(
@@ -224,9 +224,9 @@ class EventosController extends Controller
                $ganadores[$x]["hora"] = $eventosInscripcione->getHora()->format('H:i:s');;
                $x++;
             }
- 
+
             $serializer = new Serializer($normalizers, $encoders);
-            
+
             $response = new JsonResponse();
             $response->setStatusCode(200);
             $response->setData(array(
@@ -250,30 +250,30 @@ class EventosController extends Controller
 
             $encoders = array(new JsonEncoder());
             $normalizers = array(new ObjectNormalizer());
-            
+
 
             if($evento->getEstado() == 0){
 
-                $serializer = new Serializer($normalizers, $encoders);            
+                $serializer = new Serializer($normalizers, $encoders);
                 $response = new JsonResponse();
                 $response->setStatusCode(200);
                 $response->setData(array(
                     'response' => 'eventocerrado',
                     'idEvento' => $data["idEvento"],
                 ));
-                return $response; 
+                return $response;
             }
             //------------------------------------------------
 
             $countAsociados = $this->getDoctrine()->getRepository('CpdgUsuarioBundle:Asociados')
                         ->createQueryBuilder('e')
                         ->select('COUNT(e.id)')
-                        ->where('e.codigo = :codigo')->setParameter('codigo', $data["codigoAsociado"])      
+                        ->where('e.codigo = :codigo')->setParameter('codigo', $data["codigoAsociado"])
                         ->getQuery()
                         ->getSingleScalarResult();
-            if($countAsociados == 0){ 
+            if($countAsociados == 0){
                 $serializer = new Serializer($normalizers, $encoders);
-            
+
                 $response = new JsonResponse();
                 $response->setStatusCode(200);
                 $response->setData(array(
@@ -286,26 +286,39 @@ class EventosController extends Controller
             //------------------------------------------------
             $asociados = $this->getDoctrine()->getRepository('CpdgUsuarioBundle:Asociados')
                         ->createQueryBuilder('e')
-                        ->where('e.codigo = :codigo')->setParameter('codigo', $data["codigoAsociado"])      
+                        ->where('e.codigo = :codigo')->setParameter('codigo', $data["codigoAsociado"])
                         ->getQuery()->execute();
             foreach ($asociados as $asociado) {
                 $idAsociado = $asociado->getId();
                 $nitAsociado = $asociado->getNit();
                 $emailAsociado = $asociado->getEmail();
                 $idAsociadoCentro = $asociado->getIdCentro()->getId();
+                $comRetiro = $asociado->getRetirado();
             }
-            
-            if($idAsociadoCentro != $evento->getIdCentro()->getId()){
+
+            if ($comRetiro==1) {
+                $serializer = new Serializer($normalizers, $encoders);
+
+                $response = new JsonResponse();
+                $response->setStatusCode(200);
+                $response->setData(array(
+                    'response' => 'asoretidado',
+                    'idEvento' => $data["idEvento"],
+                ));
+                return $response;
+            }
+
+            if($idAsociadoCentro != $evento->getIdCentro()->getId() && $evento->getIdCentro()->getId() != 1){
 
                $serializer = new Serializer($normalizers, $encoders);
-            
+
                 $response = new JsonResponse();
                 $response->setStatusCode(200);
                 $response->setData(array(
                     'response' => 'nocentro',
                     'idEvento' => $data["idEvento"],
                 ));
-                return $response; 
+                return $response;
             }
             //------------------------------------------------
 
@@ -314,7 +327,7 @@ class EventosController extends Controller
                     ->createQueryBuilder('e')
                     ->where('e.idEvento = :idEvento')->setParameter('idEvento', $data["idEvento"])
                     ->andWhere('e.tipo = :tipo')->setParameter('tipo', '1')
-                    ->orderBy("e.fechaCreacion","desc")      
+                    ->orderBy("e.fechaCreacion","desc")
                     ->getQuery()->execute();
             foreach ($sorteos as $value) {
                 $idSorteo = $value->getId();
@@ -326,8 +339,8 @@ class EventosController extends Controller
                         ->select('COUNT(e.id)')
                         ->where('e.idEvento = :idEvento')->setParameter('idEvento', $data["idEvento"])
                         ->andWhere('e.idProveedor = :idProveedor')->setParameter('idProveedor', $userid)
-                        ->andWhere('e.idAsociado = :idAsociado')->setParameter('idAsociado', $idAsociado)  
-                        ->andWhere('e.idSorteo = :idSorteo')->setParameter('idSorteo', $idSorteo)    
+                        ->andWhere('e.idAsociado = :idAsociado')->setParameter('idAsociado', $idAsociado)
+                        ->andWhere('e.idSorteo = :idSorteo')->setParameter('idSorteo', $idSorteo)
                         ->getQuery()
                         ->getSingleScalarResult();*/
 
@@ -336,13 +349,13 @@ class EventosController extends Controller
                         ->select('COUNT(e.id)')
                         ->where('e.idEvento = :idEvento')->setParameter('idEvento', $data["idEvento"])
                         ->andWhere('e.idProveedor = :idProveedor')->setParameter('idProveedor', $userid)
-                        ->andWhere('e.idAsociado = :idAsociado')->setParameter('idAsociado', $idAsociado)     
+                        ->andWhere('e.idAsociado = :idAsociado')->setParameter('idAsociado', $idAsociado)
                         ->getQuery()
                         ->getSingleScalarResult();
 
-            if($verEventosInscripciones != 0){ 
+            if($verEventosInscripciones != 0){
                 $serializer = new Serializer($normalizers, $encoders);
-            
+
                 $response = new JsonResponse();
                 $response->setStatusCode(200);
                 $response->setData(array(
@@ -352,7 +365,7 @@ class EventosController extends Controller
                 return $response;
             }else{
                 $idEventoObj = $em->getReference('CpdgUsuarioBundle:Eventos', $data["idEvento"]);
-                $idProveedorObj = $em->getReference('CpdgUsuarioBundle:Proveedores', $userid); 
+                $idProveedorObj = $em->getReference('CpdgUsuarioBundle:Proveedores', $userid);
                 $idAsociadoObj = $em->getReference('CpdgUsuarioBundle:Asociados', $idAsociado);
 
 
@@ -361,9 +374,9 @@ class EventosController extends Controller
                         ->createQueryBuilder('e')
                         ->where('e.idEvento = :idEvento')->setParameter('idEvento', $data["idEvento"])
                         ->andWhere('e.tipo = :tipo')->setParameter('tipo', '1')
-                        ->orderBy("e.fechaCreacion","desc")      
+                        ->orderBy("e.fechaCreacion","desc")
                         ->getQuery()->execute();
-                        
+
                 foreach ($sorteos as $value) {
                     $idSorteo = $value->getId();
                     break;
@@ -374,9 +387,9 @@ class EventosController extends Controller
                 $newEventosInscripciones->setIdEvento($idEventoObj);
                 $newEventosInscripciones->setIdSorteo($idSorteoObj);
                 $newEventosInscripciones->setIdProveedor($idProveedorObj);
-                $newEventosInscripciones->setIdAsociado($idAsociadoObj);                
-                $newEventosInscripciones->setFecha(new \DateTime(date("Y-m-d"))); 
-                $newEventosInscripciones->setHora(new \DateTime(date("H:i:s")));           
+                $newEventosInscripciones->setIdAsociado($idAsociadoObj);
+                $newEventosInscripciones->setFecha(new \DateTime(date("Y-m-d")));
+                $newEventosInscripciones->setHora(new \DateTime(date("H:i:s")));
                 $em->persist($newEventosInscripciones);
                 $em->flush();
 
@@ -407,7 +420,7 @@ class EventosController extends Controller
             }
 
             $serializer = new Serializer($normalizers, $encoders);
-            
+
             $response = new JsonResponse();
             $response->setStatusCode(200);
             $response->setData(array(
@@ -432,7 +445,7 @@ class EventosController extends Controller
             $normalizers = array(new ObjectNormalizer());
 
 
-            
+
             $eventosInscripciones = $em->getRepository('CpdgUsuarioBundle:EventosInscripciones')->find($data["idvar"]);
             $evento = $em->getRepository('CpdgUsuarioBundle:Eventos')->find($data["idEvento"]);
 
@@ -442,13 +455,13 @@ class EventosController extends Controller
                         ->select('COUNT(e.id)')
                         ->where('e.idEvento = :idEvento')->setParameter('idEvento', $data["idEvento"])
                         ->andWhere('e.idProveedor = :idProveedor')->setParameter('idProveedor', $userid)
-                        ->andWhere('e.idAsociado = :idAsociado')->setParameter('idAsociado', $eventosInscripciones->getIdAsociado()->getId())      
+                        ->andWhere('e.idAsociado = :idAsociado')->setParameter('idAsociado', $eventosInscripciones->getIdAsociado()->getId())
                         ->getQuery()
                         ->getSingleScalarResult();
 
-            if($verEventosGanadores > 0){ 
+            if($verEventosGanadores > 0){
                 $serializer = new Serializer($normalizers, $encoders);
-            
+
                 $response = new JsonResponse();
                 $response->setStatusCode(200);
                 $response->setData(array(
@@ -457,16 +470,16 @@ class EventosController extends Controller
                 ));
                 return $response;
             }
-            
-            $this->processLogAction(1,$userid, "Proveedor Elimina Droguería, Evento: ".$evento->getId()." - ".$evento->getNombre().", Proveedor: ".$userid." - ".$usernombre.", Drogueria: ".$eventosInscripciones->getIdAsociado()->getId()." - ".$eventosInscripciones->getIdAsociado()->getNit());  
+
+            $this->processLogAction(1,$userid, "Proveedor Elimina Droguería, Evento: ".$evento->getId()." - ".$evento->getNombre().", Proveedor: ".$userid." - ".$usernombre.", Drogueria: ".$eventosInscripciones->getIdAsociado()->getId()." - ".$eventosInscripciones->getIdAsociado()->getNit());
 
             $em->remove($eventosInscripciones);
-            $em->flush();  
+            $em->flush();
 
-                    
- 
+
+
             $serializer = new Serializer($normalizers, $encoders);
-            
+
             $response = new JsonResponse();
             $response->setStatusCode(200);
             $response->setData(array(

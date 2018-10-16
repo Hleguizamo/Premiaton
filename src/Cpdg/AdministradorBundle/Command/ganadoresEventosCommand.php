@@ -16,21 +16,20 @@ class ganadoresEventosCommand extends ContainerAwareCommand
 	public $conn;
     protected function configure() {
         parent::configure();
-        $this->setName('sorteoganadores:evento')->setDescription('Sorteo de Ganadores para Evento.');		
+        $this->setName('sorteoganadores:evento')->setDescription('Sorteo de Ganadores para Evento.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-		
+
 		$contadorGlobal = 0;
 
 		$fechaGlobal = date("Y-m-d");
 		$horaGlobal = date("H:i:s");
 		$fechaCompletaGlobal = $fechaGlobal." ".$horaGlobal;
-		$queryCerrar = "SELECT * 
-        		  FROM eventos 
-        		  WHERE estado IN(1,9)         		  
-        		  AND fecha_fin <= '".$fechaGlobal."'
-        		  AND hora_fin < '".$horaGlobal."'
+		$queryCerrar = "SELECT *
+        		  FROM eventos
+        		  WHERE estado IN(1,9)
+        		  AND fecha_fin <= '".$fechaGlobal." ".$horaGlobal."'
         		  ;";
 		$runCerrar = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($queryCerrar, array(), array());
 		foreach($runCerrar as $lineCerrar){
@@ -40,30 +39,28 @@ class ganadoresEventosCommand extends ContainerAwareCommand
 
         $logEvento = "Inicia el sorteo\n<br>";
 
-        $query = "SELECT * 
-        		  FROM eventos 
-        		  WHERE estado IN(1,9) 
-        		  AND fecha_inicio <= '".$fechaGlobal."' 
-        		  AND fecha_fin >= '".$fechaGlobal."'
-        		  AND hora_inicio <= '".$horaGlobal."' 
-        		  AND hora_fin >= '".$horaGlobal."'
+        $query = "SELECT *
+        		  FROM eventos
+        		  WHERE estado IN(1,9)
+        		  AND fecha_inicio <= '".$fechaGlobal." ".$horaGlobal."'
+        		  AND fecha_fin >= '".$fechaGlobal." ".$horaGlobal."'
         		  ;";
 
 		$run = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($query, array(), array());
-		$x = 0; 
+		$x = 0;
 		$logEvento .= "---------------------------------------------------------------------\n<br>Eventos en el rango de ganadores:\n<br>\n<br>";
 		$contadorEvento = 0;
-		foreach($run as $line){ 
-$output->writeln("se procesa el evento ".$line["id"]);			
+		foreach($run as $line){
+$output->writeln("se procesa el evento ".$line["id"]);
 			$queryupdate = "UPDATE eventos SET estado = '9' WHERE id = '".$line["id"]."';";
 			$runupdate = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($queryupdate, array(), array());
 
-			$sqlSorteo = "SELECT * 
-	        		  FROM 
+			$sqlSorteo = "SELECT *
+	        		  FROM
 	        		  sorteos
-	        		  WHERE 
+	        		  WHERE
 	        		  id_evento = '".$line["id"]."'
-	        		  AND tipo = '1' 
+	        		  AND tipo = '1'
 	        		  ORDER BY fecha_creacion DESC
 	        		  LIMIT 0,1
 	        		  ;";
@@ -71,16 +68,16 @@ $output->writeln("se procesa el evento ".$line["id"]);
 	        foreach($datosSorteo as $lines){ $idSorteo = $lines["id"]; }
 $output->writeln("se procesa el sorteo ".$idSorteo);
 			$x ++;
-			
-			$sqlGanadoresEvento = "SELECT 
-					  eventos_ganadores.id as idev, 
-					  eventos_ganadores.id_proveedor as idprov, 
-					  eventos_ganadores.fecha as fechav, 
-					  eventos_ganadores.hora as horav, 
-					  asociados.* 
-	        		  FROM 
+
+			$sqlGanadoresEvento = "SELECT
+					  eventos_ganadores.id as idev,
+					  eventos_ganadores.id_proveedor as idprov,
+					  eventos_ganadores.fecha as fechav,
+					  eventos_ganadores.hora as horav,
+					  asociados.*
+	        		  FROM
 	        		  eventos_ganadores, asociados
-	        		  WHERE eventos_ganadores.id_evento = '".$line["id"]."' 
+	        		  WHERE eventos_ganadores.id_evento = '".$line["id"]."'
 	        		  AND eventos_ganadores.id_asociado = asociados.id
 	        		  ORDER BY eventos_ganadores.fecha,eventos_ganadores.hora asc
 	        		  ;";
@@ -103,7 +100,7 @@ $output->writeln("se excluye el ganador ".$lineg["codigo"]);
 	          $ganadoresExcluidos = substr($ganadoresExcluidost, 0, -1);
 	          $proveedoresExcluidos = substr($proveedoresExcluidost, 0, -1);
 	          $nitGanadoresExcluidos = substr($nitGanadoresExcluidost, 0, -1);
-		  
+
 			  $logEvento .= "Evento: ".$line["nombre"]."\n<br>";
 			  $logEvento .= "Cada cuanto hay sorteo: ".$line["periodicidad"]." minutos"."\n<br>";
 			  $logEvento .= "Cantidad de ganadores por sorteo: ".$line["numero_ganadores"]."\n<br>";
@@ -114,7 +111,7 @@ $output->writeln("se excluye el ganador ".$lineg["codigo"]);
 		//$horaGlobal;
 		$booleanPeriodicidad = "false";
 		if($counterGanadores == 0){
-			$fechaInicio = $line["fecha_inicio"]." ". $line["hora_inicio"];
+			$fechaInicio = $line["fecha_inicio"];
 			$nuevafecha = strtotime ( '+'.$line["periodicidad"].' minutes' , strtotime ( $fechaInicio ) ) ;
 			$nuevaHora = date ( 'H:i' , $nuevafecha );
 			$nuevafecha = date ( 'Y-m-d H:i:s' , $nuevafecha );
@@ -136,11 +133,11 @@ $output->writeln("se excluye el ganador ".$lineg["codigo"]);
 				$booleanPeriodicidad = "true";
 			}
 		}
-		
+
        // $nuevafecha = strtotime ( '-1 day' , strtotime ( $fecha ) );
         //$nuevafecha = date ( 'Y-m-d' , $nuevafecha );
 
-		
+
 		if($booleanPeriodicidad == "true"){
 			//inicia sorteo de ganadores
 			if($counterGanadores <= $line["numero_maximo_ganadores"]){
@@ -148,7 +145,7 @@ $output->writeln("generando ganadores ");
 				$logEvento .= "---------------------\n<br>";
 				$logEvento .= "Generando Ganadores:\n<br>";
 				$logEvento .= "---------------------\n<br>";
-				$privateCounterGanadores = $counterGanadores; 
+				$privateCounterGanadores = $counterGanadores;
 				if($counterGanadores > 0){
 					$logEvento .= "Lista de ganadores excluidos:\n<br>";
 					$xy = 0;
@@ -173,9 +170,9 @@ $output->writeln("buscando ganador ".$xz);
 					}
 					if($ganadoresExcluidos == ""){
 						$selectGanadorId = "
-						SELECT eventos_inscripciones.*, asociados.nombre_asociado, asociados.codigo, asociados.nit 
+						SELECT eventos_inscripciones.*, asociados.nombre_asociado, asociados.codigo, asociados.nit
 						FROM eventos_inscripciones, asociados
-						WHERE 
+						WHERE
 						id_evento = '".$line["id"]."'
 						AND id_sorteo = '".$idSorteo."'
 						$addsqlGanadorProveedor
@@ -191,9 +188,9 @@ $output->writeln("buscando ganador ".$xz);
 							}
 						}
 						$selectGanadorId = "
-						SELECT eventos_inscripciones.*, asociados.nombre_asociado, asociados.codigo, asociados.nit 
+						SELECT eventos_inscripciones.*, asociados.nombre_asociado, asociados.codigo, asociados.nit
 						FROM eventos_inscripciones, asociados
-						WHERE 
+						WHERE
 						id_evento = '".$line["id"]."'
 						AND id_sorteo = '".$idSorteo."'
 						$addsqlGanadorProveedor
@@ -204,10 +201,10 @@ $output->writeln("buscando ganador ".$xz);
 						ORDER BY RAND()
 						LIMIT 1
 					";
-					}					
+					}
 $output->writeln($selectGanadorId);
 					$runGanadorId = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($selectGanadorId, array(), array());
-					
+
 					$counterInsert = 0;
 					foreach ($runGanadorId as $valueg) {
 						$idAsociadoGanador = $valueg["id_asociado"];
@@ -279,10 +276,10 @@ $output->writeln("se crea el nuevo sorteo ");
 		}
 			$logEvento .= "---------------------------------------------------------------------"."\n<br>";
 			$logEvento .= "---------------------------------------------------------------------"."\n<br>";
-		} 
+		}
 		$output->writeln($logEvento);
 		if($contadorGlobal > 0){
-			$this->processLogAction("0","CronEventos", $logEvento);	
+			$this->processLogAction("0","CronEventos", $logEvento);
 		}
         $output->writeln("Finaliza el Sorteo");
     }
@@ -290,6 +287,6 @@ $output->writeln("se crea el nuevo sorteo ");
     {
         $queryinsert = "INSERT INTO logs VALUES(NULL, '".$tipoUsuario."', '".$usuario."', '".$mensaje."', '127.0.0.1', '".date("Y-m-d H:i:s")."');";
 		$runinsert = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($queryinsert, array(), array());
-    }	
+    }
 }
 ?>

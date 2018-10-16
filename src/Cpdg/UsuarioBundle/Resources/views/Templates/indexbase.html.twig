@@ -21,7 +21,7 @@
                 </div>
                 <div class="modal-body">
                   <form class="uk-panel uk-panel-box uk-form" method="POST" action="{{ path(namevar~'_index') }}" id="buscarAdvanzadoForm" autocomplete="off">
-                    <div class='input-group' id='mainBuscar'>                      
+                    <div class='input-group' id='mainBuscar'>
                       <select id="fieldType" class="form-control" style="height:46px;">
                       <!-- <option value="0">Todos</option>
                       <script type="text/javascript">
@@ -37,15 +37,15 @@
                             fields.push('{{ completeSearchFields["campos"][counterFields0] }}');
                         </script>
                       {% set counterFields0 = counterFields0 + 1 %}
-                      {% set counterFields = counterFields + 1 %}                      
+                      {% set counterFields = counterFields + 1 %}
                       {% endfor %}
                       </select>
 
-                      <span class="input-group-addon">                        
+                      <span class="input-group-addon">
                         <button type="button" class="btn btn-primary" onclick="addField();"><i class="fa fa-plus-square" aria-hidden="true"></i></button>
-                      </span>                      
+                      </span>
                     </div>
-                    <div id="setFieldDiv"><p>&nbsp;</p></div>                    
+                    <div id="setFieldDiv"><p>&nbsp;</p></div>
                     <label>&nbsp;</label><br>
                     <div style="text-align: right;">
                     <input type="hidden" name="completeSearchCounter" id="completeSearchCounter" value="123">
@@ -87,7 +87,7 @@
 
     {% if proveedores is defined %}
     <script type="text/javascript">
-      
+
       var counterInscripciones = 0;
       function resetInscripciones(){
         var table = document.getElementById("tablaUsuarios");
@@ -95,7 +95,7 @@
             table.deleteRow(2);
         }
       }
-      function confirmdeleted(idVar, idEvento){         
+      function confirmdeleted(idVar, idEvento){
             swal({
               title: "Eliminar",
               text: "¿Realmente desea Eliminar La Droguería?",
@@ -106,7 +106,7 @@
               confirmButtonText: "Eliminar",
               closeOnConfirm: true
             },
-            function(){           
+            function(){
               eliminarDrogueria(idVar, idEvento);
             });
         }
@@ -120,17 +120,17 @@
         $.ajax({
             method: "POST",
             url: urlvar,
-            data: { 
+            data: {
                 'idEvento': idVar
             },
             dataType: 'json',
-            success: function(data){                    
+            success: function(data){
                 if(data.hasOwnProperty("response") && data.response === "success"){
                     if(data.hasOwnProperty("inscripciones")){
                       var table = document.getElementById("tablaUsuarios");
                       counterInscripciones = data.total;
                       var y = 0;
-                      for(var x = 0; x < data.total; x++){                             
+                      for(var x = 0; x < data.total; x++){
                        // proveedores[data.proveedores[x].id] = 1;
                         y = x+2;
                         var row = table.insertRow(y);
@@ -165,8 +165,8 @@
                         /*
                         cell_9.innerHTML = '<center><a href="javascript:void(0);" class="btn btn-sm btn-primary" nClick="confirmdeleted(' + data.id[x]. + ', ' + window.courrentIdVar + ')" data-toggle="tooltip" title="Eliminar" ><span style="font-size:14px;" ><i class="fa fa-remove"></i></span></a></center>';
                         */
-                      } 
-                      document.getElementById("loadingDiv2").innerHTML = '';                           
+                      }
+                      document.getElementById("loadingDiv2").innerHTML = '';
                     }else{
                         console.log("POSTS NOT FOUND");
                     }
@@ -183,7 +183,7 @@
                 if(jqXHR.status === 405)
                 {
                     console.error("METHOD NOT ALLOWED!");
-                    
+
                 }
             }
         });
@@ -198,7 +198,7 @@
             table.deleteRow(2);
         }
       }
-      
+
       function loadGanadores(idVar){
         resetGanadores();
         document.getElementById("loadingDiv3").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Cargando Ganadores';
@@ -206,17 +206,17 @@
         $.ajax({
             method: "POST",
             url: urlvar,
-            data: { 
+            data: {
                 'idEvento': idVar
             },
             dataType: 'json',
-            success: function(data){                    
+            success: function(data){
                 if(data.hasOwnProperty("response") && data.response === "success"){
                     if(data.hasOwnProperty("ganadores")){
                       var table = document.getElementById("tablaGanadores");
                       counterGanadores = data.total;
                       var y = 0;
-                      for(var x = 0; x < data.total; x++){                             
+                      for(var x = 0; x < data.total; x++){
                        // proveedores[data.proveedores[x].id] = 1;
                         y = x+2;
                         var row = table.insertRow(y);
@@ -239,8 +239,8 @@
                         cell_7.innerHTML = data.ganadores[x].nombreDrogueria;
                         cell_8.innerHTML = data.ganadores[x].fecha;
                         cell_9.innerHTML = data.ganadores[x].hora;
-                      } 
-                      document.getElementById("loadingDiv3").innerHTML = '';                           
+                      }
+                      document.getElementById("loadingDiv3").innerHTML = '';
                     }else{
                         console.log("POSTS NOT FOUND");
                     }
@@ -255,7 +255,7 @@
                 if(jqXHR.status === 405)
                 {
                     console.error("METHOD NOT ALLOWED!");
-                    
+
                 }
             }
         });
@@ -269,7 +269,7 @@
               );
               document.getElementById("addcodigo").value = "";
               document.getElementById("addcodigo").focus();
-          return; 
+          return;
         }
         document.getElementById("botonInscribir").disabled = true;
         document.getElementById("loadingDivAdd").innerHTML = '<img src="{{ asset("images/loader.gif") }}"><br>Inscribiendo Droguería';
@@ -277,25 +277,27 @@
         $.ajax({
             method: "POST",
             url: urlvar,
-            data: { 
+            data: {
                 'idEvento': window.courrentIdVar,
                 'idProveedor': '{{ app.user.id }}',
                 'codigoAsociado': document.getElementById("addcodigo").value,
             },
             dataType: 'json',
-            success: function(data){                    
+            success: function(data){
                 if(data.hasOwnProperty("response")){
                     //alert(data.temp);
                     //alert(data.response);
                     switch(data.response){
-                      case "desconocido": swal("","El código de droguería no se encuentra registrado","warning"); 
+                      case "desconocido": swal("","El código de droguería no se encuentra registrado","warning");
                       document.getElementById("botonInscribir").disabled = false;  break;
                       case "success": loadInscripciones(window.courrentIdVar); break;
-                      case "inscrito": swal("","Ya ha inscrito esta droguería","warning"); 
+                      case "inscrito": swal("","Ya ha inscrito esta droguería","warning");
                       document.getElementById("botonInscribir").disabled = false;  break;
-                      case "nocentro": swal("","La Droguería no pertenece al centro del Evento","warning"); 
+                      case "nocentro": swal("","La Droguería no pertenece al centro del Evento","warning");
                       document.getElementById("botonInscribir").disabled = false;  break;
-                      case "eventocerrado": swal("","El evento ya ha terminado y las incripciones han terminado.","warning"); 
+                      case "asoretidado": swal("","La Droguería esta retirada","warning"); 
+                      document.getElementById("botonInscribir").disabled = false;  break;
+                      case "eventocerrado": swal("","El evento ya ha terminado y las incripciones han terminado.","warning");
                       document.getElementById("botonInscribir").disabled = false;  break;
                     }
                     document.getElementById("addcodigo").value = "";
@@ -314,7 +316,7 @@
                 if(jqXHR.status === 405)
                 {
                     console.error("METHOD NOT ALLOWED!");
-                    
+
                 }
             }
         });
@@ -327,18 +329,18 @@
         $.ajax({
             method: "POST",
             url: urlvar,
-            data: { 
+            data: {
                 'idEvento': window.courrentIdVar,
                 'idvar': idvar,
             },
             dataType: 'json',
-            success: function(data){                    
+            success: function(data){
                 if(data.hasOwnProperty("response")){
                     //alert(data.tempvar);
                     switch(data.response){
                       case "ganador": swal("","La droguería no se puede eliminar ya que ha sido ganadora del evento","warning"); break;
                       case "success": loadInscripciones(window.courrentIdVar); break;
-                    }                    
+                    }
                     document.getElementById("loadingDiv2").innerHTML = '';
                 }else{
                   eliminarDrogueria(idvar, idEvento);
@@ -352,7 +354,7 @@
                 if(jqXHR.status === 405)
                 {
                     console.error("METHOD NOT ALLOWED!");
-                    
+
                 }
             }
         });
@@ -363,7 +365,7 @@
       width: 98%;
     }
     .modal-wide .modal-body {
-      
+
     }
 
     #tallModal .modal-body #inscripcionesModal { margin-bottom: 0px; }
@@ -381,7 +383,7 @@
           </div>
           <div class="modal-body">
               <div class="alert alert-success">
-              <label>Para agregar una nueva droguería ingrese el código: </label>                      
+              <label>Para agregar una nueva droguería ingrese el código: </label>
               <input type='number' class="form-control" style="height:32px; width:300px;" value="" id="addcodigo" name="addcodigo" required="required" />
               <br><div id="loadingDivAdd"></div>
               <button id="botonInscribir" type="button" class="btn btn-primary" onclick="inscribirDrogueria();">Inscribir Droguería</button>
@@ -488,7 +490,7 @@
                   <form class="uk-panel uk-panel-box uk-form" method="POST" action="{{ path(namevar~'_index') }}" id="buscarAdvanzadoForm" autocomplete="off">
                     <label>Desde: </label>
                     <div class='input-group date' id='desde' >
-                      
+
                       <input type='text' class="form-control" style="height:32px;" value="{{ desde }}" name="desde" required />
                       <span class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
@@ -497,7 +499,7 @@
 
                     <label>Hasta: </label>
                     <div class='input-group date' id='hasta'>
-                      
+
                       <input type='text' class="form-control" style="height:32px;" value="{{ hasta }}" name="hasta" required />
                       <span class="input-group-addon" >
                         <span class="glyphicon glyphicon-calendar"></span>
@@ -527,11 +529,11 @@
                 </div>
                 <div class="modal-body">
                   <form class="uk-panel uk-panel-box uk-form" method="POST" action="{{ path(namevar~'_index') }}" id="buscarAdvanzadoForm" autocomplete="off">
-                    <label>Usuario: </label>                      
+                    <label>Usuario: </label>
                     <input type='text' class="form-control" style="height:32px;" value="" name="nombre" />
                     <br>
 
-                    <label>Foro: </label> 
+                    <label>Foro: </label>
                     <select name="idForo" id="idForo" class="form-control">
                       <option value="">Todos</option>
                       {% for foro in foros %}
@@ -542,7 +544,7 @@
 
                     <label>Desde: </label>
                     <div class='input-group date' id='desde' >
-                      
+
                       <input type='text' class="form-control" style="height:32px;" value="{{ desde }}" name="desde"  />
                       <span class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
@@ -551,7 +553,7 @@
 
                     <label>Hasta: </label>
                     <div class='input-group date' id='hasta'>
-                      
+
                       <input type='text' class="form-control" style="height:32px;" value="{{ hasta }}" name="hasta"  />
                       <span class="input-group-addon" >
                         <span class="glyphicon glyphicon-calendar"></span>
@@ -581,13 +583,13 @@
                 </div>
                 <div class="modal-body">
                   <form class="uk-panel uk-panel-box uk-form" method="POST" action="{{ path(namevar~'_index') }}" id="buscarAdvanzadoForm" autocomplete="off">
-                    <label>Nombres y Apellidos: </label>                      
+                    <label>Nombres y Apellidos: </label>
                     <input type='text' class="form-control" style="height:32px;" value="" name="nombre" />
                     <br>
 
                     <label>Desde: </label>
                     <div class='input-group date' id='desde' >
-                      
+
                       <input type='text' class="form-control" style="height:32px;" value="{{ desde }}" name="desde"  />
                       <span class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
@@ -596,7 +598,7 @@
 
                     <label>Hasta: </label>
                     <div class='input-group date' id='hasta'>
-                      
+
                       <input type='text' class="form-control" style="height:32px;" value="{{ hasta }}" name="hasta"  />
                       <span class="input-group-addon" >
                         <span class="glyphicon glyphicon-calendar"></span>
@@ -604,7 +606,7 @@
                     </div>
                     <br>
 
-                    <label>Categoría: </label> 
+                    <label>Categoría: </label>
                     <select name="idCategoria" id="idCategoria" class="form-control">
                       <option value="">Todas</option>
                       {% for categoria in categorias %}
@@ -624,7 +626,7 @@
             </div>
           </div>
     {% endif %}
-       
+
 
     <div class="downloadpost" style="font-size:30px; color: {{ coloractual }}">{{ titulo }}</div>
   <div class="col-lg-12">
@@ -639,7 +641,7 @@
 
             {% if hidevertodos is defined %}{% else %}
             <a href="{{ path(namevar~'_index') }}" class="btn btn-primary" data-toggle="tooltip" title="Ver Todos los Registros" ><i class="fa fa-list-alt" aria-hidden="true"></i> Ver todos</a>
-            {% endif %} 
+            {% endif %}
 
             {% if new == "true" %}
             <a href="{{ path(namevar~'_new') }}" class="btn btn-primary" data-toggle="tooltip" title="Crear Nuevo"><i class="fa fa-file-text" aria-hidden="true"></i> Crear Nuevo</a>
@@ -655,7 +657,7 @@
 
             {% if loadFile is defined %}
             <a href="javascript:void(0);" class="btn btn-success" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Cargar Excel</a>
-            {% endif %}            
+            {% endif %}
 
             {% if pdf == "true" %}
             <a href="{{ path(namevar~'_new') }}" class="btn btn-primary" data-toggle="tooltip" title="Generar PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Generar PDF</a>
@@ -668,7 +670,7 @@
   <div style="clear: both;"></div>
   <div style="height: 10px;">&nbsp;</div>
   {% if excel == "true" %}
-    {% if busquedageneral != "" %}    
+    {% if busquedageneral != "" %}
   <form action="{{ path(namevar~'_exportarExcel') }}" method="POST" id="formExcelGeneral" name="formExcelGeneral">
     <input type="hidden" id="buscar" name="buscar" value="{{ busquedageneral }}">
   </form>
@@ -680,7 +682,7 @@
   {% endif %}
   <form action="{{ path(namevar~'_exportarExcel') }}" method="POST" id="formExcel" name="formExcel">
     <input type="hidden" id="idvar" name="idvar" value="">
-  </form> 
+  </form>
   {% endif %}
     <div class="col-lg-12">
     <center>{{ knp_pagination_render(resultset) }}</center>
@@ -700,24 +702,24 @@
                 <td>{{ counter1 }}</td>
                     {% include bundlevar~':_fields.html.twig' %}
                 {% if edit == "true" %}
-                <td class="tableclass1" width="1%" style="text-align:center;">                                     
+                <td class="tableclass1" width="1%" style="text-align:center;">
                     <a href="{{ path(namevar~'_edit', { 'id': result.id }) }}" class="btn btn-sm btn-primary">
                     <span style="font-size:14px;" data-toggle="tooltip" title="Editar" ><i class="fa fa-edit"></i></span>
-                    </a>                    
+                    </a>
                 </td>
                 {% endif %}
                 {% if delete == "true" %}
-                <td class="tableclass1" width="1%" style="text-align:center;">                                     
+                <td class="tableclass1" width="1%" style="text-align:center;">
                     <a href="javascript:void(0);" class="btn btn-sm btn-primary" onClick="confirmdelete('{{ path(namevar~'_delete', { 'id': result.id }) }}')" data-toggle="tooltip" title="Eliminar" ><span style="font-size:14px;" >
                     <i class="fa fa-remove"></i></span>
-                    </a>                   
+                    </a>
                 </td>
                 {% endif %}
                 {% if pdfone == "true" %}
-                <td class="tableclass1" width="1%" style="text-align:center;">                                     
+                <td class="tableclass1" width="1%" style="text-align:center;">
                     <a href="{{ path(namevar~'_generarPfd', { 'id': result.id }) }}" class="btn btn-sm btn-primary">
                     <span style="font-size:14px;" data-toggle="tooltip" title="Ver PDF" ><i class="fa fa-file-pdf-o"></i></span>
-                    </a>                    
+                    </a>
                 </td>
                 {% endif %}
             </tr>
@@ -729,7 +731,7 @@
     <center>{{ knp_pagination_render(resultset) }}</center>
     </div>
     <script>
-        function confirmdelete(delvar){            
+        function confirmdelete(delvar){
             swal({
               title: "Eliminar",
               text: "¿Realmente desea Eliminar el registro?",
@@ -740,11 +742,11 @@
               confirmButtonText: "Eliminar",
               closeOnConfirm: false
             },
-            function(){           
+            function(){
               window.location.href=delvar;
             });
         }
-        function confirmarchivar(delvar){            
+        function confirmarchivar(delvar){
             swal({
               title: "Archivar",
               text: "¿Realmente desea Archivar el registro?",
@@ -755,7 +757,7 @@
               confirmButtonText: "Archivar",
               closeOnConfirm: false
             },
-            function(){           
+            function(){
               window.location.href=delvar;
             });
         }
@@ -766,22 +768,22 @@
                 inscribirDrogueria();
               }
           });
-          $('[data-toggle="tooltip"]').tooltip(); 
+          $('[data-toggle="tooltip"]').tooltip();
         });
-        
+
         function sendExcel(idvar){
           document.getElementById("idvar").value = idvar;
-          document.getElementById("formExcel").submit(); 
+          document.getElementById("formExcel").submit();
         }
         {% if advancedsearch == "true" %}
         $(function () {
-                $('#desde').datetimepicker({                    
+                $('#desde').datetimepicker({
           locale: 'es',
           format: 'YYYY-MM-DD',
                 });
             });
         $(function () {
-                $('#hasta').datetimepicker({                    
+                $('#hasta').datetimepicker({
           locale: 'es',
           format: 'YYYY-MM-DD',
                 });
@@ -789,7 +791,7 @@
         {% endif %}
         function sendPdf(idvar){
           document.getElementById("idvarpdf").value = idvar;
-          document.getElementById("formPdf").submit(); 
+          document.getElementById("formPdf").submit();
         }
 
         function validarExcel(objvar){
@@ -831,11 +833,11 @@
           $.ajax({
               method: "POST",
               url: urlvar,
-              data: { 
+              data: {
                   'idvar': '1'
               },
               dataType: 'json',
-              success: function(data){ 
+              success: function(data){
                   if(data.hasOwnProperty("response") && data.response === "success"){
                       document.getElementById("proveedorAleatorioDiv").innerHTML = data.ganadores[0].nombre + '<br><img src="{{asset("images/proveedores/") }}' + data.ganadores[0].imagen + '" style="max-height:220px;" class="img-respnsive" ><br><br>';
                   }else{
@@ -849,7 +851,7 @@
                   if(jqXHR.status === 405)
                   {
                       console.error("METHOD NOT ALLOWED!");
-                      
+
                   }
               }
           });
@@ -863,11 +865,11 @@
           $.ajax({
               method: "POST",
               url: urlvar,
-              data: { 
+              data: {
                   'idvar': '2'
               },
               dataType: 'json',
-              success: function(data){ 
+              success: function(data){
                   if(data.hasOwnProperty("response") && data.response === "success"){
                       document.getElementById("asociadoAleatorioDiv").innerHTML = "Asociado: " + data.ganadores[0].nombreAsociado + '<br>Nombre Droguería: ' + data.ganadores[0].nombreDrogueria + '<br>Nit: ' + data.ganadores[0].nit + '<br>Código: ' + data.ganadores[0].codigo + '<br><br><br>';
                   }else{
@@ -881,7 +883,7 @@
                   if(jqXHR.status === 405)
                   {
                       console.error("METHOD NOT ALLOWED!");
-                      
+
                   }
               }
           });
@@ -916,7 +918,7 @@
           if(types[selectedOption] == "date"){
             registrarDateTime(counterFields);
           }
-          
+
           $('#fieldTypeAux_' + counterFields + ' option:eq(' + selectedOption + ')').attr('selected', 'selected')
         }
         function removeField(idvar){
@@ -924,7 +926,7 @@
         }
         function registrarDateTime(counterFields){
           //alert(counterFields);
-          $('#findField_' + counterFields).datetimepicker({                    
+          $('#findField_' + counterFields).datetimepicker({
           locale: 'es',
           format: 'YYYY-MM-DD',
                 });
@@ -935,6 +937,6 @@
         }
         function restoreButton(counterFields){
           $('#buttonFields_' + counterFields).show();
-        } 
+        }
         </script>
 {% endblock %}

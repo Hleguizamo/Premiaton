@@ -21,3 +21,4 @@ composer.lock
 symfony
 global.conf
 ._.DS_Store
+/web/*

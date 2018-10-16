@@ -10,6 +10,7 @@ use Cpdg\UsuarioBundle\Entity\Logs;
 
 use Cpdg\AdministradorBundle\Entity\ProveedoresUsuarios;
 use Cpdg\AdministradorBundle\Form\ProveedoresUsuariosType;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * ProveedoresUsuarios controller.
@@ -39,7 +40,7 @@ class ProveedoresUsuariosController extends Controller
         $this->campos["campos"][] = "e.nombre";
         $this->campos["campos"][] = "e.telefono";
         $this->campos["campos"][] = "e.email";
-        
+
     }
     /**
      * Lists all entities.
@@ -55,11 +56,11 @@ class ProveedoresUsuariosController extends Controller
         $edit = "true";
         $delete = "false";
         $new = "true";
-        $excel = "false";
+        $excel = "true";
         $pdf = "false";
         $pdfone = "false";
-        $advancedsearch = "false"; 
-        $completeSearch = "true";         
+        $advancedsearch = "false";
+        $completeSearch = "true";
         $cantidadPorPagina = 20;
         $startPagination = ($page - 1) * $cantidadPorPagina;
         //----------------------------------
@@ -71,7 +72,7 @@ class ProveedoresUsuariosController extends Controller
         $etiquetas[] = "Contraseña";
         $etiquetas[] = "Logo";
         $etiquetas[] = "Editar";
-        
+
         //----------------------------------
         $consulta = $this->getDoctrine()->getRepository($this->baseBundle.":".$this->entityMain)->createQueryBuilder('e')
         ->leftJoin('CpdgAdministradorBundle:Proveedores', 'p', 'WITH', 'p.id = e.idProveedor');
@@ -80,7 +81,7 @@ class ProveedoresUsuariosController extends Controller
             for($y = 1; $y <= intval($data["completeSearchCounter"]); $y ++){
                 if(isset($data["findField_".$y])){
                     $campoexp = explode(".", $data["fieldType_".$y]);
-                    
+
                     if($data["fieldQueryAux_".$y] == "CONTIENE"){
                         $consulta->orWhere($data["fieldType_".$y].' LIKE :'.$campoexp[1].$y)->setParameter($campoexp[1].$y, '%'.$data["findField_".$y].'%');
                     }elseif($data["fieldQueryAux_".$y] == "ESIGUAL"){
@@ -92,7 +93,7 @@ class ProveedoresUsuariosController extends Controller
                     }elseif($data["fieldQueryAux_".$y] == "MAYORQUE"){
                         $consulta->orWhere($data["fieldType_".$y].' > :'.$campoexp[1].$y)->setParameter($campoexp[1].$y, $data["findField_".$y]);
                     }
-                    
+
                 }
                 $x++;
             }
@@ -116,15 +117,15 @@ class ProveedoresUsuariosController extends Controller
             'edit' => $edit,
             'delete' => $delete,
             'new' => $new,
-            'etiquetas' => $etiquetas,            
+            'etiquetas' => $etiquetas,
             'excel' => $excel,
             'pdf' => $pdf,
             'pdfone' => $pdfone,
-            'advancedsearch' => $advancedsearch,            
-            'startPagination' => $startPagination,  
+            'advancedsearch' => $advancedsearch,
+            'startPagination' => $startPagination,
             'completeSearch' => $completeSearch,
             'completeSearchFields' => $this->campos,
-            'form' => $form->createView(), 
+            'form' => $form->createView(),
         ));
     }
     /**
@@ -134,9 +135,9 @@ class ProveedoresUsuariosController extends Controller
     public function newAction(Request $request)
         {
         $newf = new ProveedoresUsuarios();
-        $form = $this->createForm("Cpdg\AdministradorBundle\Form\\".$this->entityMain."Type", $newf);        
+        $form = $this->createForm("Cpdg\AdministradorBundle\Form\\".$this->entityMain."Type", $newf);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {                    
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $request->request->all();
             $em = $this->getDoctrine()->getManager();
 
@@ -191,17 +192,18 @@ class ProveedoresUsuariosController extends Controller
         $this->addFlash('success', 'Eliminado correctamente');
         $em = $this->getDoctrine()->getManager();
         $em->remove($entityvar);
-        $em->flush();        
+        $em->flush();
         return $this->redirectToRoute(strtolower($this->entityMain).'_index');
     }
     public function exportarExcelAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager(); 
+
+        $em = $this->getDoctrine()->getManager();
         $data = $request->request->all();
         $query = $em->getRepository($this->baseBundle.':'.$this->entityMain)
-                ->createQueryBuilder('e');
+                ->createQueryBuilder('e')->leftJoin('CpdgAdministradorBundle:Proveedores', 'p', 'WITH', 'p.id = e.idProveedor');
 
-        
+
         $result = $query->getQuery()->getResult();
 
         $phpExcelObject = $this->get('phpexcel')->createPHPExcelObject();
@@ -215,16 +217,14 @@ class ProveedoresUsuariosController extends Controller
             ->setKeywords("Premiatón");
 
         $phpExcelObject->setActiveSheetIndex(0)
-            ->setCellValue('A1', 'Premiatón - Lista de Proveedores');
-        
+            ->setCellValue('A1', 'Premiatón - Lista de Usuarios Proveedores');
+
         $phpExcelObject->setActiveSheetIndex(0)
-            ->setCellValue('A2', 'Nombre')
-            ->setCellValue('B2', 'Nit')
-            ->setCellValue('C2', 'Representante')
-            ->setCellValue('D2', 'Telefono')
-            ->setCellValue('E2', 'Usuario')
-            ->setCellValue('F2', 'Contraseña')
-            ->setCellValue('G2', 'Email')
+            ->setCellValue('A2', 'Proveedor')
+            ->setCellValue('B2', 'Nombre')
+            ->setCellValue('C2', 'Telefono')
+            ->setCellValue('D2', 'Email / Usuario')
+            ->setCellValue('E2', 'Contraseña')
             ;
 
         // fijamos un ancho a las distintas columnas
@@ -243,25 +243,17 @@ class ProveedoresUsuariosController extends Controller
         $phpExcelObject->setActiveSheetIndex(0)
             ->getColumnDimension('E')
             ->setWidth(25);
-        $phpExcelObject->setActiveSheetIndex(0)
-            ->getColumnDimension('F')
-            ->setWidth(25);
-        $phpExcelObject->setActiveSheetIndex(0)
-            ->getColumnDimension('G')
-            ->setWidth(40);
 
 
         // recorremos los registros obtenidos de la consulta a base de datos escribiéndolos en las celdas correspondientes
         $row = 3;
         foreach ($result as $item) {
             $phpExcelObject->setActiveSheetIndex(0)
-                ->setCellValue('A'.$row, $item->getNombre())
-                ->setCellValue('B'.$row, $item->getNit())
-                ->setCellValue('C'.$row, $item->getRepresentante())
-                ->setCellValue('D'.$row, $item->getTelefono())
-                ->setCellValue('E'.$row, $item->getUsuario())
-                ->setCellValue('F'.$row, $item->getContrasena())
-                ->setCellValue('G'.$row, $item->getEmail())
+                ->setCellValue('A'.$row, $item->getIdProveedor()->getNombre())
+                ->setCellValue('B'.$row, $item->getNombre())
+                ->setCellValue('C'.$row, $item->getTelefono())
+                ->setCellValue('D'.$row, $item->getEmail())
+                ->setCellValue('E'.$row, $item->getContrasena())
                 ;
             $row++;
         }
@@ -271,7 +263,7 @@ class ProveedoresUsuariosController extends Controller
         // se crea el response
         $response = $this->get('phpexcel')->createStreamedResponse($writer);
         // y por último se añaden las cabeceras
-        $dispositionHeader = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,'Proveedores.xls');
+        $dispositionHeader = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,'Proveedoresusuarios.xls');
         $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
         $response->headers->set('Pragma', 'public');
         $response->headers->set('Cache-Control', 'maxage=1');
@@ -285,7 +277,7 @@ class ProveedoresUsuariosController extends Controller
         $userid=$useridObj->getId();
         $user=$useridObj->getUsuario();
         $archivo = new Archivos();
-        $form = $this->createForm("Cpdg\AdministradorBundle\Form\ArchivosType", $archivo);        
+        $form = $this->createForm("Cpdg\AdministradorBundle\Form\ArchivosType", $archivo);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -306,7 +298,7 @@ class ProveedoresUsuariosController extends Controller
             $phpExcelObject = $this->get('phpexcel')->createPHPExcelObject();
             $file = $this->get('kernel')->getRootDir()."/../web/uploads/".$fileName;
             if (!file_exists($file)) {
-                $this->addFlash('error', 'Archivo no cargado contactese con el administrador del sistema'); 
+                $this->addFlash('error', 'Archivo no cargado contactese con el administrador del sistema');
             }
             $objPHPExcel = \PHPExcel_IOFactory::load($file);
             $retVar = "";
@@ -327,10 +319,10 @@ class ProveedoresUsuariosController extends Controller
                                     if($cell->getCoordinate() == "B".$row->getRowIndex()){
 
                                        $proveedor = $this->getDoctrine()->getRepository('CpdgAdministradorBundle:Proveedores')->createQueryBuilder('e');
-                                       $proveedor->where('e.nit = :nit')->setParameter('nit', $cell->getCalculatedValue()); 
+                                       $proveedor->where('e.nit = :nit')->setParameter('nit', $cell->getCalculatedValue());
                                        $inicount = $proveedor->getQuery()->execute();
-                                       $total = -1;      
-                                       foreach($inicount as $repoc){ $total ++; } 
+                                       $total = -1;
+                                       foreach($inicount as $repoc){ $total ++; }
                                             if($total == 0){
                                                $boolInsert = false;
                                             }else{
@@ -352,8 +344,8 @@ class ProveedoresUsuariosController extends Controller
 
                                     try{
                                         $em = $this->getDoctrine()->getManager();
-                                        
-                                        
+
+
                                         $insert->setNombre($dataInsert[0]);
                                         $insert->setNit($dataInsert[1]);
                                         $insert->setRepresentante($dataInsert[2]);
@@ -380,10 +372,10 @@ class ProveedoresUsuariosController extends Controller
                 $this->addFlash('success', 'Proveedores cargados exitosamente , la información ingresada cargo de forma correcta.');
                 $this->processLogAction(0,$user, "Carga Proveedores: ".$retVar);
             }else{
-               $this->addFlash('success', 'Los Proveedores que intenta ingresar ya se encuentran registrados en el sistema'); 
+               $this->addFlash('success', 'Los Proveedores que intenta ingresar ya se encuentran registrados en el sistema');
                $this->processLogAction(0,$user, "Carga Proveedores: Los Proveedores que intenta ingresar ya se encuentran registrados en el sistema");
             }
-                        
+
             return $this->redirectToRoute(strtolower($this->entityMain).'_index');
         }
 

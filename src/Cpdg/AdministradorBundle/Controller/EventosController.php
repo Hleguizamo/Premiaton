@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
- 
+
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -72,8 +72,8 @@ class EventosController extends Controller
         $excel = "false";
         $pdf = "false";
         $pdfone = "false";
-        $advancedsearch = "false"; 
-        $completeSearch = "true";         
+        $advancedsearch = "false";
+        $completeSearch = "true";
         $cantidadPorPagina = 20;
         $startPagination = ($page - 1) * $cantidadPorPagina;
         //----------------------------------
@@ -89,10 +89,10 @@ class EventosController extends Controller
         $etiquetas[] = "Máximo de Ganadores";
         $etiquetas[] = "Estado";
         $etiquetas[] = "Imagen";
-        $etiquetas[] = "Proveedores"; 
+        $etiquetas[] = "Proveedores";
         $etiquetas[] = "Inscritos";
         $etiquetas[] = "Ganadores";
-        $etiquetas[] = "Pantalla Ganadores";        
+        $etiquetas[] = "Pantalla Ganadores";
         $etiquetas[] = "Otras Tareas";
         $etiquetas[] = "Sub Eventos";
         $etiquetas[] = "Reporte";
@@ -109,7 +109,7 @@ class EventosController extends Controller
             for($y = 1; $y <= intval($data["completeSearchCounter"]); $y ++){
                 if(isset($data["findField_".$y])){
                     $campoexp = explode(".", $data["fieldType_".$y]);
-                    
+
                     if($data["fieldQueryAux_".$y] == "CONTIENE"){
                         $consulta->orWhere($data["fieldType_".$y].' LIKE :'.$campoexp[1].$y)->setParameter($campoexp[1].$y, '%'.$data["findField_".$y].'%');
                     }elseif($data["fieldQueryAux_".$y] == "ESIGUAL"){
@@ -121,7 +121,7 @@ class EventosController extends Controller
                     }elseif($data["fieldQueryAux_".$y] == "MAYORQUE"){
                         $consulta->orWhere($data["fieldType_".$y].' > :'.$campoexp[1].$y)->setParameter($campoexp[1].$y, $data["findField_".$y]);
                     }
-                    
+
                 }
                 $x++;
             }
@@ -145,15 +145,15 @@ class EventosController extends Controller
             'edit' => $edit,
             'delete' => $delete,
             'new' => $new,
-            'etiquetas' => $etiquetas,            
+            'etiquetas' => $etiquetas,
             'excel' => $excel,
             'pdf' => $pdf,
             'pdfone' => $pdfone,
-            'advancedsearch' => $advancedsearch,            
+            'advancedsearch' => $advancedsearch,
             'startPagination' => $startPagination,
             'completeSearch' => $completeSearch,
-            'completeSearchFields' => $this->campos, 
-            'proveedores' => $proveedores,          
+            'completeSearchFields' => $this->campos,
+            'proveedores' => $proveedores,
         ));
     }
     //--------------------------
@@ -171,14 +171,14 @@ class EventosController extends Controller
         $excel = "false";
         $pdf = "false";
         $pdfone = "false";
-        $advancedsearch = "false"; 
-        $completeSearch = "false";         
+        $advancedsearch = "false";
+        $completeSearch = "false";
         $cantidadPorPagina = 20;
         $startPagination = ($page - 1) * $cantidadPorPagina;
         //----------------------------------
         $etiquetas[] = "#";
         $etiquetas[] = "Nombre";
-        $etiquetas[] = "Pantalla Ganadores";        
+        $etiquetas[] = "Pantalla Ganadores";
 
         //----------------------------------
         $consulta = $this->getDoctrine()->getRepository($this->baseBundle.":".$this->entityMain)->createQueryBuilder('e')
@@ -198,15 +198,15 @@ class EventosController extends Controller
             'edit' => $edit,
             'delete' => $delete,
             'new' => $new,
-            'etiquetas' => $etiquetas,            
+            'etiquetas' => $etiquetas,
             'excel' => $excel,
             'pdf' => $pdf,
             'pdfone' => $pdfone,
-            'advancedsearch' => $advancedsearch,            
+            'advancedsearch' => $advancedsearch,
             'startPagination' => $startPagination,
             'completeSearch' => $completeSearch,
-            'completeSearchFields' => $this->campos, 
-            'proveedores' => $proveedores,          
+            'completeSearchFields' => $this->campos,
+            'proveedores' => $proveedores,
         ));
     }
     //--------------------------
@@ -217,15 +217,15 @@ class EventosController extends Controller
     public function newAction(Request $request)
         {
         $newf = new Eventos();
-        $form = $this->createForm("Cpdg\AdministradorBundle\Form\\".$this->entityMain."Type", $newf);        
+        $form = $this->createForm("Cpdg\AdministradorBundle\Form\\".$this->entityMain."Type", $newf);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) { 
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
             $useridObj = $this->get('security.token_storage')->getToken()->getUser('Article', 1);
             $userid=$useridObj->getId();
             $idUsuarioObj = $em->getReference('CpdgAdministradorBundle:Administrador', $userid);
-            
+
             $archivo1 = $newf->getImagen();
             if($archivo1 != ""){
                 $fileName1 = md5(uniqid()).'.jpg';
@@ -236,11 +236,13 @@ class EventosController extends Controller
                 $newf->setImagen("");
             }
 
-            $newf->setIdAdministrador($idUsuarioObj);   
-            $newf->setFechaCreacion(new \DateTime(date("Y-m-d H:i:s")));            
+            $newf->setIdAdministrador($idUsuarioObj);
+            $newf->setFechaCreacion(new \DateTime(date("Y-m-d H:i:s")));
+            $newf->setFechaInicio(new \DateTime($newf->getFechaInicio()->format('Y-m-d').' '.$newf->getHoraInicio()->format('H:i:s')));
+            $newf->setFechaFin(new \DateTime($newf->getFechaFin()->format('Y-m-d').' '.$newf->getHoraFin()->format('H:i:s')));
             $em->persist($newf);
             $em->flush();
-            
+
             $newSorteo = new Sorteos();
             $newSorteo->setIdEvento($newf->getId());
             $newSorteo->setTipo(1);
@@ -277,64 +279,64 @@ class EventosController extends Controller
             $em = $this->getDoctrine()->getManager();
 
             $addProcess = "";
-            if($data['idCentro'] != $postvar->getIdCentro()->getId()){ 
-                $addProcess .= "idCentro: ".$data['idCentro']."->".$postvar->getIdCentro()->getCentro()."<br>";  
+            if($data['idCentro'] != $postvar->getIdCentro()->getId()){
+                $addProcess .= "idCentro: ".$data['idCentro']."->".$postvar->getIdCentro()->getCentro()."<br>";
             }
-            if($data['nombre'] != $postvar->getNombre()){ 
-                $addProcess .= "nombre: ".$data['nombre']."->".$postvar->getNombre()."<br>";  
+            if($data['nombre'] != $postvar->getNombre()){
+                $addProcess .= "nombre: ".$data['nombre']."->".$postvar->getNombre()."<br>";
             }
-            if($data['idCiudad'] != $postvar->getIdCiudad()->getId()){ 
-                $addProcess .= "idCiudad: ".$data['idCiudad']."->".$postvar->getIdCiudad()->getId().". ".$postvar->getIdCiudad()->getNombre()."<br>";  
+            if($data['idCiudad'] != $postvar->getIdCiudad()->getId()){
+                $addProcess .= "idCiudad: ".$data['idCiudad']."->".$postvar->getIdCiudad()->getId().". ".$postvar->getIdCiudad()->getNombre()."<br>";
             }
-            if($data['fechaInicio'] != $postvar->getFechaInicio()->format('Y-m-d')){ 
-                $addProcess .= "fechaInicio: ".$data['fechaInicio']."->".$postvar->getFechaInicio()->format('Y-m-d')."<br>";  
+            if($data['fechaInicio'] != $postvar->getFechaInicio()->format('Y-m-d')){
+                $addProcess .= "fechaInicio: ".$data['fechaInicio']."->".$postvar->getFechaInicio()->format('Y-m-d')."<br>";
             }
-            if($data['horaInicio'] != $postvar->getHoraInicio()->format('H:i:s')){ 
-                $addProcess .= "horaInicio: ".$data['horaInicio']."->".$postvar->getHoraInicio()->format('H:i:s')."<br>";  
+            if($data['horaInicio'] != $postvar->getHoraInicio()->format('H:i:s')){
+                $addProcess .= "horaInicio: ".$data['horaInicio']."->".$postvar->getHoraInicio()->format('H:i:s')."<br>";
             }
-            if($data['fechaFin'] != $postvar->getFechaFin()->format('Y-m-d')){ 
-                $addProcess .= "fechaFin: ".$data['fechaFin']."->".$postvar->getFechaFin()->format('Y-m-d')."<br>";  
+            if($data['fechaFin'] != $postvar->getFechaFin()->format('Y-m-d')){
+                $addProcess .= "fechaFin: ".$data['fechaFin']."->".$postvar->getFechaFin()->format('Y-m-d')."<br>";
             }
-            if($data['horaFin'] != $postvar->getHoraFin()->format('H:i:s')){ 
-                $addProcess .= "horaFin: ".$data['horaFin']."->".$postvar->getHoraFin()->format('H:i:s')."<br>";  
+            if($data['horaFin'] != $postvar->getHoraFin()->format('H:i:s')){
+                $addProcess .= "horaFin: ".$data['horaFin']."->".$postvar->getHoraFin()->format('H:i:s')."<br>";
             }
-            if($data['numeroGanadores'] != $postvar->getNumeroGanadores()){ 
-                $addProcess .= "numeroGanadores: ".$data['numeroGanadores']."->".$postvar->getNumeroGanadores()."<br>";  
+            if($data['numeroGanadores'] != $postvar->getNumeroGanadores()){
+                $addProcess .= "numeroGanadores: ".$data['numeroGanadores']."->".$postvar->getNumeroGanadores()."<br>";
             }
-            if($data['numeroMaximoGanadores'] != $postvar->getNumeroMaximoGanadores()){ 
-                $addProcess .= "numeroMaximoGanadores: ".$data['numeroMaximoGanadores']."->".$postvar->getNumeroMaximoGanadores()."<br>";  
+            if($data['numeroMaximoGanadores'] != $postvar->getNumeroMaximoGanadores()){
+                $addProcess .= "numeroMaximoGanadores: ".$data['numeroMaximoGanadores']."->".$postvar->getNumeroMaximoGanadores()."<br>";
             }
-            if($data['numeroProveedores'] != $postvar->getNumeroProveedores()){ 
-                $addProcess .= "numeroProveedores: ".$data['numeroProveedores']."->".$postvar->getNumeroProveedores()."<br>";  
+            if($data['numeroProveedores'] != $postvar->getNumeroProveedores()){
+                $addProcess .= "numeroProveedores: ".$data['numeroProveedores']."->".$postvar->getNumeroProveedores()."<br>";
             }
-            if($data['imagenvar'] != $postvar->getImagen()){ 
-                $addProcess .= "imagenvar: ".$data['imagenvar']."->".$postvar->getImagen()."<br>";  
+            if($data['imagenvar'] != $postvar->getImagen()){
+                $addProcess .= "imagenvar: ".$data['imagenvar']."->".$postvar->getImagen()."<br>";
             }
-            if($data['premio'] != $postvar->getPremio()){ 
-                $addProcess .= "premio: ".$data['premio']."->".$postvar->getPremio()."<br>";  
+            if($data['premio'] != $postvar->getPremio()){
+                $addProcess .= "premio: ".$data['premio']."->".$postvar->getPremio()."<br>";
             }
-            if($data['mostrarValor'] != $postvar->getMostrarValor()){ 
-                $addProcess .= "mostrarValor: ".$data['mostrarValor']."->".$postvar->getMostrarValor()."<br>";  
+            if($data['mostrarValor'] != $postvar->getMostrarValor()){
+                $addProcess .= "mostrarValor: ".$data['mostrarValor']."->".$postvar->getMostrarValor()."<br>";
             }
-            if($data['repiteProveedor'] != $postvar->getRepiteProveedor()){ 
-                $addProcess .= "repiteProveedor: ".$data['repiteProveedor']."->".$postvar->getRepiteProveedor()."<br>";  
+            if($data['repiteProveedor'] != $postvar->getRepiteProveedor()){
+                $addProcess .= "repiteProveedor: ".$data['repiteProveedor']."->".$postvar->getRepiteProveedor()."<br>";
             }
-            if($data['estado'] != $postvar->getEstado()){ 
+            if($data['estado'] != $postvar->getEstado()){
                 switch($postvar->getEstado()){
-                    case "0": $estadov = "Evento Terminado"; break;  
-                    case "1": $estadov = "Activo"; break;  
-                    case "9": $estadov = "En Curso"; break;  
-                    case "5": $estadov = "En Pausa"; break;  
+                    case "0": $estadov = "Evento Terminado"; break;
+                    case "1": $estadov = "Activo"; break;
+                    case "9": $estadov = "En Curso"; break;
+                    case "5": $estadov = "En Pausa"; break;
                 }
-                $addProcess .= "estado: ".$data['estado']."->".$postvar->getEstado().". ".$estadov."<br>"; 
+                $addProcess .= "estado: ".$data['estado']."->".$postvar->getEstado().". ".$estadov."<br>";
             }
 
             $useridObj = $this->get('security.token_storage')->getToken()->getUser('Article', 1);
             $userid=$useridObj->getId();
             $usernombre=$useridObj->getNombre();
 
-            $this->processLogAction(1,$userid, "Administrador cambia evento, 
-                                            Evento: ".$postvar->getId()." - ".$postvar->getNombre().", 
+            $this->processLogAction(1,$userid, "Administrador cambia evento,
+                                            Evento: ".$postvar->getId()." - ".$postvar->getNombre().",
                                             Administrador: ".$userid." - ".$usernombre.",<br>$addProcess");
 
             $archivo1 = $postvar->getImagen();
@@ -346,7 +348,8 @@ class EventosController extends Controller
             }else{
                $postvar->setImagen($data["imagenvar"]);
             }
-
+            $postvar->setFechaInicio(new \DateTime($postvar->getFechaInicio()->format('Y-m-d').' '.$postvar->getHoraInicio()->format('H:i:s')));
+            $postvar->setFechaFin(new \DateTime($postvar->getFechaFin()->format('Y-m-d').' '.$postvar->getHoraFin()->format('H:i:s')));
             $em->persist($postvar);
             $em->flush();
             $this->addFlash('success', 'Registro actualizado correctamente');
@@ -386,7 +389,7 @@ class EventosController extends Controller
         $this->addFlash('success', 'Eliminado correctamente');
         $em = $this->getDoctrine()->getManager();
         $em->remove($entityvar);
-        $em->flush();        
+        $em->flush();
         return $this->redirectToRoute(strtolower($this->entityMain).'_index');
     }
 
@@ -404,16 +407,16 @@ class EventosController extends Controller
             $eventosProveedores = $this->getDoctrine()->getRepository('CpdgAdministradorBundle:EventosProveedores')
                         ->createQueryBuilder('e')
                         ->where('e.idEvento = :idEvento')->setParameter('idEvento', $data["idEvento"])
-                        ->getQuery()->execute();           
+                        ->getQuery()->execute();
 
             foreach ($eventosProveedores as $eventosProveedore) {
                $proveedores[$x]["id"] = $eventosProveedore->getId();
                $proveedores[$x]["idProveedor"] = $eventosProveedore->getIdProveedor()->getId();
                $x++;
             }
- 
+
             $serializer = new Serializer($normalizers, $encoders);
-            
+
             $response = new JsonResponse();
             $response->setStatusCode(200);
             $response->setData(array(
@@ -433,8 +436,8 @@ class EventosController extends Controller
             $data = $request->request->all();
             $encoders = array(new JsonEncoder());
             $normalizers = array(new ObjectNormalizer());
-            
-            $serializer = new Serializer($normalizers, $encoders);            
+
+            $serializer = new Serializer($normalizers, $encoders);
             $response = new JsonResponse();
             $response->setStatusCode(200);
 
@@ -452,7 +455,7 @@ class EventosController extends Controller
                         ->getQuery()
                         ->getSingleScalarResult();
                 //Si esta en el Limite de Inscritos retorna limite
-                if($verificarInscritos >= $evento->getNumeroProveedores()){                    
+                if($verificarInscritos >= $evento->getNumeroProveedores()){
                     $response->setData(array(
                         'response' => 'limite',
                         'total' => $verificarInscritos,
@@ -482,7 +485,7 @@ class EventosController extends Controller
                     $eventosProveedores = new EventosProveedores();
                     $eventosProveedores->setIdEvento($idEventoObj);
                     $eventosProveedores->setIdProveedor($idProveedorObj);
-                    $eventosProveedores->setFecha(new \DateTime(date("Y-m-d H:i:s")));            
+                    $eventosProveedores->setFecha(new \DateTime(date("Y-m-d H:i:s")));
                     $em->persist($eventosProveedores);
                     $em->flush();
 
@@ -490,9 +493,9 @@ class EventosController extends Controller
                     $userid=$useridObj->getId();
                     $usernombre=$useridObj->getNombre();
                     $evento = $em->getRepository('CpdgAdministradorBundle:Eventos')->find($data["idEvento"]);
-                    $this->processLogAction(1,$userid, "Administrador asocia proveedor al evento, 
-                                            Evento: ".$evento->getId()." - ".$evento->getNombre().", 
-                                            Administrador: ".$userid." - ".$usernombre.", 
+                    $this->processLogAction(1,$userid, "Administrador asocia proveedor al evento,
+                                            Evento: ".$evento->getId()." - ".$evento->getNombre().",
+                                            Administrador: ".$userid." - ".$usernombre.",
                                             Proveedor: ".$eventosProveedores->getIdProveedor()->getId()." - ".$eventosProveedores->getIdProveedor()->getNombre());
 
                     $response->setData(array(
@@ -535,9 +538,9 @@ class EventosController extends Controller
                     $userid=$useridObj->getId();
                     $usernombre=$useridObj->getNombre();
                     $evento = $em->getRepository('CpdgAdministradorBundle:Eventos')->find($data["idEvento"]);
-                    $this->processLogAction(1,$userid, "Administrador elimina proveedor del evento, 
-                                            Evento: ".$evento->getId()." - ".$evento->getNombre().", 
-                                            Administrador: ".$userid." - ".$usernombre.", 
+                    $this->processLogAction(1,$userid, "Administrador elimina proveedor del evento,
+                                            Evento: ".$evento->getId()." - ".$evento->getNombre().",
+                                            Administrador: ".$userid." - ".$usernombre.",
                                             Proveedor: ".$eventosProveedores->getIdProveedor()->getId()." - ".$eventosProveedores->getIdProveedor()->getNombre());
 
                     $em->remove($eventosProveedores);
@@ -576,7 +579,7 @@ class EventosController extends Controller
                         ->where('e.idEvento = :idEvento')->setParameter('idEvento', $data["idEvento"])
                         ->orderBy('e.idSorteo','desc')
                         ->getQuery()->execute();
-           
+
 
             foreach ($eventosInscripciones as $eventosInscripcione) {
                $inscripciones[$x]["id"] = $eventosInscripcione->getId();
@@ -592,9 +595,9 @@ class EventosController extends Controller
                $inscripciones[$x]["hora"] = $eventosInscripcione->getHora()->format('H:i:s');
                $x++;
             }
- 
+
             $serializer = new Serializer($normalizers, $encoders);
-            
+
             $response = new JsonResponse();
             $response->setStatusCode(200);
             $response->setData(array(
@@ -623,7 +626,7 @@ class EventosController extends Controller
                     ->where('e.idEvento = :idEvento')->setParameter('idEvento', $data["idEvento"])
                     ->andWhere('e.tipo = :tipo')->setParameter('tipo', '1')
                     ->andWhere('e.estado = :estado')->setParameter('estado', '1')
-                    ->orderBy("e.id","asc")      
+                    ->orderBy("e.id","asc")
                     ->getQuery()->execute();
             $y = 0;
             foreach ($sorteos as $value) {
@@ -637,7 +640,7 @@ class EventosController extends Controller
                             ->where('e.idEvento = :idEvento')->setParameter('idEvento', $data["idEvento"])
                             ->andWhere('e.idSorteo = :idSorteo')->setParameter('idSorteo', $idSorteo)
                             ->getQuery()->execute();
-               
+
 
                 foreach ($eventosGanadores as $eventosGanador) {
                    $ganadores[$x]["id"] = $eventosGanador->getId();
@@ -658,7 +661,7 @@ class EventosController extends Controller
                             ->where('e.idEvento = :idEvento')->setParameter('idEvento', $data["idEvento"])
                             ->orderBy("e.idSorteo","desc")
                             ->getQuery()->execute();
-               
+
 
                 foreach ($eventosGanadoresb as $value) {
                    $todoslosganadores[$xb]["id"] = $value->getId();
@@ -706,9 +709,9 @@ class EventosController extends Controller
                 $aleatoriosAsociados[$xyz]["hora"] = $value->getHora()->format("H:i:s");
                 $xyz++;
             }
- 
+
             $serializer = new Serializer($normalizers, $encoders);
-            
+
             $response = new JsonResponse();
             $response->setStatusCode(200);
             $response->setData(array(
@@ -744,8 +747,8 @@ class EventosController extends Controller
 
                 $offset = max(0, rand(0, ($max - 1)));
 
-                $aleatorio = $em->createQuery('SELECT q FROM CpdgAdministradorBundle:EventosProveedores q 
-                            WHERE 
+                $aleatorio = $em->createQuery('SELECT q FROM CpdgAdministradorBundle:EventosProveedores q
+                            WHERE
                              q.idEvento = '.$data["idEvento"].'
                             AND q.id >= :rand
                             ORDER BY q.id ASC')
@@ -762,9 +765,9 @@ class EventosController extends Controller
                 $userid=$useridObj->getId();
                 $usernombre=$useridObj->getNombre();
                 $evento = $em->getRepository('CpdgAdministradorBundle:Eventos')->find($data["idEvento"]);
-                $this->processLogAction(1,$userid, "Administrador genera proveedor aleatorio, 
-                                        Evento: ".$evento->getId()." - ".$evento->getNombre().", 
-                                        Administrador: ".$userid." - ".$usernombre.", 
+                $this->processLogAction(1,$userid, "Administrador genera proveedor aleatorio,
+                                        Evento: ".$evento->getId()." - ".$evento->getNombre().",
+                                        Administrador: ".$userid." - ".$usernombre.",
                                         Drogueria: ".$aleatorio->getIdProveedor()->getId()." - ".$aleatorio->getIdProveedor()->getNombre());
 
                 $idEventoO = $em->getReference('CpdgAdministradorBundle:Eventos', $evento->getId());
@@ -800,7 +803,7 @@ class EventosController extends Controller
                     }
 
                 }
-                
+
                 //-----------------------------------------------
 
                 $max = $em->createQuery('SELECT COUNT(q.id) FROM CpdgAdministradorBundle:EventosInscripciones q
@@ -810,8 +813,8 @@ class EventosController extends Controller
 
                 $offset = max(0, rand(0, ($max - 1)));
 
-                
-                $aleatorio = $em->createQuery('SELECT q FROM CpdgAdministradorBundle:EventosInscripciones q 
+
+                $aleatorio = $em->createQuery('SELECT q FROM CpdgAdministradorBundle:EventosInscripciones q
                             WHERE q.id >= :rand
                             and q.idEvento = '.$data["idEvento"])
                             ->setParameter('rand',rand(0,$max))
@@ -843,14 +846,14 @@ class EventosController extends Controller
 
                     //aca
                     //$evento = $em->getRepository('CpdgAdministradorBundle:Eventos')->find($data["idEvento"]);
-                    $this->processLogAction(1,$userid, "Administrador genera asociado aleatorio, 
-                                            Evento: ".$evento->getId()." - ".$evento->getNombre().", 
-                                            Administrador: ".$userid." - ".$usernombre.", 
+                    $this->processLogAction(1,$userid, "Administrador genera asociado aleatorio,
+                                            Evento: ".$evento->getId()." - ".$evento->getNombre().",
+                                            Administrador: ".$userid." - ".$usernombre.",
                                             Drogueria: ".$aleatorio->getIdProveedor()->getId()." - ".$aleatorio->getIdAsociado()->getNit()." - ".$aleatorio->getIdAsociado()->getNombreAsociado());
 
                     $idEventoO = $em->getReference('CpdgAdministradorBundle:Eventos', $evento->getId());
                     $idAsociadoO = $em->getReference('CpdgAdministradorBundle:Asociados', $aleatorio->getIdAsociado()->getId());
-                    
+
                     $eventosGanadoresAleatoriosAsociados = new EventosGanadoresAleatoriosAsociados();
                     $eventosGanadoresAleatoriosAsociados->setIdEvento($idEventoO);
                     $eventosGanadoresAleatoriosAsociados->setIdAsociado($idAsociadoO);
@@ -860,12 +863,12 @@ class EventosController extends Controller
                     $em->flush();
                 }
 
-                
+
 
             }
- 
+
             $serializer = new Serializer($normalizers, $encoders);
-            
+
             $response = new JsonResponse();
             $response->setStatusCode(200);
             $response->setData(array(
@@ -880,12 +883,12 @@ class EventosController extends Controller
 
     public function generarReporteAction(Request $request, $id)
     {
-        $em = $this->getDoctrine()->getManager(); 
+        $em = $this->getDoctrine()->getManager();
         $data = $request->request->all();
         $query = $em->getRepository($this->baseBundle.':'.$this->entityMain)
                 ->createQueryBuilder('e')
                 ->where('e.id = :id')->setParameter('id', $id);
-        
+
         $result = $query->getQuery()->getResult();
 
         $phpExcelObject = $this->get('phpexcel')->createPHPExcelObject();
@@ -900,7 +903,7 @@ class EventosController extends Controller
 
         $phpExcelObject->setActiveSheetIndex(0)
             ->setCellValue('A1', 'Premiatón - Reporte Evento: ');
-        
+
         $phpExcelObject->setActiveSheetIndex(0)
             ->setCellValue('A2', 'Centro')
             ->setCellValue('B2', 'Ciudad')
@@ -1001,7 +1004,7 @@ class EventosController extends Controller
 
         $phpExcelObject->setActiveSheetIndex(0)
             ->setCellValue('A5', 'Proveedores asociados al evento');
-        
+
         $phpExcelObject->setActiveSheetIndex(0)
             ->setCellValue('A6', 'Nombre')
             ->setCellValue('B6', 'Nit')
@@ -1035,7 +1038,7 @@ class EventosController extends Controller
                 ->createQueryBuilder('e')
                 ->where('e.idEvento = :idEvento')->setParameter('idEvento', $id)
                 ->leftJoin('CpdgAdministradorBundle:Proveedores', 'p', 'WITH', 'p.id = e.idProveedor')
-                ;        
+                ;
         $result2 = $query2->getQuery()->getResult();
 
         $row ++;
@@ -1081,13 +1084,13 @@ class EventosController extends Controller
                 ->where('e.idEvento = :idEvento')->setParameter('idEvento', $id)
                 ->leftJoin('CpdgAdministradorBundle:Proveedores', 'p', 'WITH', 'p.id = e.idProveedor')
                 ->leftJoin('CpdgAdministradorBundle:Asociados', 'a', 'WITH', 'a.id = e.idAsociado')
-                ;        
+                ;
         $result3 = $query3->getQuery()->getResult();
 
         $row ++;
         foreach ($result3 as $item3) {
             $phpExcelObject->setActiveSheetIndex(0)
-                ->setCellValue('A'.$row, str_pad($item3->getIdSorteo()->getId(), 6, "0", STR_PAD_LEFT))                
+                ->setCellValue('A'.$row, str_pad($item3->getIdSorteo()->getId(), 6, "0", STR_PAD_LEFT))
                 ->setCellValue('B'.$row, $item3->getIdProveedor()->getNombre())
                 ->setCellValue('C'.$row, $item3->getIdAsociado()->getIdCentro()->getCentro())
                 ->setCellValue('D'.$row, $item3->getIdAsociado()->getNombreAsociado())
@@ -1166,7 +1169,7 @@ class EventosController extends Controller
                 ->where('e.idEvento = :idEvento')->setParameter('idEvento', $id)
                 ->leftJoin('CpdgAdministradorBundle:Proveedores', 'p', 'WITH', 'p.id = e.idProveedor')
                 ->leftJoin('CpdgAdministradorBundle:Asociados', 'a', 'WITH', 'a.id = e.idAsociado')
-                ;        
+                ;
         $result3 = $query3->getQuery()->getResult();
 
         $row ++;
@@ -1204,7 +1207,7 @@ class EventosController extends Controller
                 ->createQueryBuilder('e')
                 ->where('e.idEvento = :idEvento')->setParameter('idEvento', $id)
                 ->leftJoin('CpdgAdministradorBundle:Proveedores', 'p', 'WITH', 'p.id = e.idProveedor')
-                ;        
+                ;
         $result4 = $query4->getQuery()->getResult();
 
         $row ++;
@@ -1232,7 +1235,7 @@ class EventosController extends Controller
                 ->createQueryBuilder('e')
                 ->where('e.idEvento = :idEvento')->setParameter('idEvento', $id)
                 ->leftJoin('CpdgAdministradorBundle:Asociados', 'a', 'WITH', 'a.id = e.idAsociado')
-                ;        
+                ;
         $result5 = $query5->getQuery()->getResult();
 
         $row ++;

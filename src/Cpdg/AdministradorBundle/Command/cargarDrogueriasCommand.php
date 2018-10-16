@@ -16,18 +16,19 @@ class cargarDrogueriasCommand extends ContainerAwareCommand
 	public $conn;
     protected function configure() {
         parent::configure();
-        $this->setName('actualiza:droguerias')->setDescription('Actualizar Droguerias');		
+        $this->setName('actualiza:droguerias')->setDescription('Actualizar Droguerias');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-		
-        $output->writeln("Inicia la carga de Droguerias");    
+
+        $output->writeln("Inicia la carga de Droguerias");
 
         $maestro_drog = "/home/planos/maestro_drog.txt";
 		$drog = fopen($maestro_drog,"rb");
 		$y = 0;
 		$z = 0;
 		$codigos = "";
+		$codDocumento=array();
 		while(($linea = fgets($drog)) !== false){
 			$lineVar = explode(",", $linea);
 			$output->writeln("Verificando Codigo: ".$lineVar[1]);
@@ -42,20 +43,20 @@ class cargarDrogueriasCommand extends ContainerAwareCommand
 				$centrovar = substr($lineVar[15], 0,1);
 				if($centrovar==4){
 					$centrovar=5;
-				}			
+				}
 				$queryinsert = "INSERT INTO asociados VALUES(
-								NULL, 
-								'".$centrovar."', 
-								'".$lineVar[6]."', 
-								'".$lineVar[3]."', 
-								'".$lineVar[1]."', 
-								'".$lineVar[19]."', 
-								'".$lineVar[4]."', 
-								'".$lineVar[10]."', 
+								NULL,
+								'".$centrovar."',
+								'".$lineVar[6]."',
+								'".$lineVar[3]."',
+								'".$lineVar[1]."',
+								'".$lineVar[19]."',
+								'".$lineVar[4]."',
+								'".$lineVar[10]."',
 								'".$lineVar[13]."',
 								'".$lineVar[20]."',
 								'".$lineVar[8]."',
-								'".$lineVar[14]."');";
+								'".$lineVar[14]."',0);";
 				$runinsert = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($queryinsert, array(), array());
 				$output->writeln("Codigo: ".intval($lineVar[1])." NO encontrado, se ha realizado la insersion del registro");
 			}else{
@@ -65,17 +66,17 @@ class cargarDrogueriasCommand extends ContainerAwareCommand
 				$centrovar = substr($lineVar[15], 0,1);
 				if($centrovar==4){
 					$centrovar=5;
-				}			
-				$queryinsert = "UPDATE 
-								asociados 
-								SET 
-								id_centro = '".$centrovar."', 
-								nombre_asociado = '".$lineVar[6]."', 
-								nombre_drogueria = '".$lineVar[3]."', 
-								codigo = '".$lineVar[1]."', 
-								email = '".$lineVar[19]."', 
-								nit = '".$lineVar[4]."', 
-								ciudad = '".$lineVar[10]."', 
+				}
+				$queryinsert = "UPDATE
+								asociados
+								SET
+								id_centro = '".$centrovar."',
+								nombre_asociado = '".$lineVar[6]."',
+								nombre_drogueria = '".$lineVar[3]."',
+								codigo = '".$lineVar[1]."',
+								email = '".$lineVar[19]."',
+								nit = '".$lineVar[4]."',
+								ciudad = '".$lineVar[10]."',
 								departamento = '".$lineVar[13]."',
 								email_drogueria = '".$lineVar[20]."',
 								direccion = '".$lineVar[8]."',
@@ -86,15 +87,27 @@ class cargarDrogueriasCommand extends ContainerAwareCommand
 				$output->writeln("Codigo: ".intval($lineVar[1])." encontrado, se han actualizado los datos");
 			}
 			$y ++;
+			$codDocumento[]=(int)$lineVar[1];
 			//if($y == 10){ break;} //Interrupción para pruebas
 		}
-		//$this->processLogAction("0","Cron", "Carga Droguerias el Cron Total: $z - Codigos: ($codigos)");	
+		$drogueriaCodigo=array();
+        $codigosSql='SELECT * FROM asociados';
+        $codigoQuery=$this->getContainer()->get('doctrine')->getConnection()->query($codigosSql);
+        foreach($codigoQuery as $codigo){
+            $drogueriaCodigo[]=(int)$codigo['codigo'];
+        }
+        $result=array_diff($drogueriaCodigo,$codDocumento);
+		foreach ($result as $bloq) {
+			$bloquearSql = "UPDATE asociados SET retirado='1' WHERE codigo=". $bloq;
+			$borrarQuery=$this->getContainer()->get('doctrine')->getConnection()->query($bloquearSql);
+        }
+		//$this->processLogAction("0","Cron", "Carga Droguerias el Cron Total: $z - Codigos: ($codigos)");
         $output->writeln("Tarea Finalizada");
     }
     public function processLogAction($tipoUsuario, $usuario, $mensaje)
     {
         $queryinsert = "INSERT INTO logs VALUES(NULL, '".$tipoUsuario."', '".$usuario."', '".$mensaje."', '127.0.0.1', '".date("Y-m-d H:i:s")."');";
 		$runinsert = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($queryinsert, array(), array());
-    }	
+    }
 }
 ?>

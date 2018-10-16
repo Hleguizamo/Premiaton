@@ -22,3 +22,8 @@ proveedoresusuarios_delete:
     path:     /{id}/delete
     defaults: { _controller: "CpdgAdministradorBundle:ProveedoresUsuarios:delete" }
     methods:  [GET, POST]
+
+proveedoresusuarios_exportarExcel:
+    path:     /exportarExcel
+    defaults: { _controller: "CpdgAdministradorBundle:ProveedoresUsuarios:exportarExcel" }
+    methods:  [GET, POST]

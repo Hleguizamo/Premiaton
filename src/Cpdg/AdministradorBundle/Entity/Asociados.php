@@ -92,6 +92,13 @@ class Asociados
     private $telefono;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="retirado", type="integer", nullable=true)
+     */
+    private $retirado;
+
+    /**
      * @var \Centros
      *
      * @ORM\ManyToOne(targetEntity="Centros")
@@ -100,8 +107,6 @@ class Asociados
      * })
      */
     private $idCentro;
-
-
 
     /**
      * Get id
@@ -351,6 +356,29 @@ class Asociados
     public function getTelefono()
     {
         return $this->telefono;
+    }
+
+    /**
+     * Set retirado
+     *
+     * @param integer $retirado
+     * @return Asociados
+     */
+    public function setRetirado($retirado)
+    {
+        $this->retirado = $retirado;
+
+        return $this;
+    }
+
+    /**
+     * Get retirado
+     *
+     * @return integer
+     */
+    public function getRetirado()
+    {
+        return $this->retirado;
     }
 
     /**
