@@ -20,40 +20,33 @@ class ganadoresEventosCommand extends ContainerAwareCommand
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
+		$emconnet=$this->getContainer()->get('doctrine')->getConnection();
 
 		$contadorGlobal = 0;
 
 		$fechaGlobal = date("Y-m-d");
 		$horaGlobal = date("H:i:s");
 		$fechaCompletaGlobal = $fechaGlobal." ".$horaGlobal;
-		$queryCerrar = "SELECT *
-        		  FROM eventos
-        		  WHERE estado IN(1,9)
-        		  AND fecha_fin <= '".$fechaGlobal." ".$horaGlobal."'
-        		  ;";
-		$runCerrar = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($queryCerrar, array(), array());
-		foreach($runCerrar as $lineCerrar){
-			$querycerrar = "UPDATE eventos SET estado = '0' WHERE id = '".$lineCerrar["id"]."';";
-			$runupdate = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($querycerrar, array(), array());
-		}
+		$queryCerrar = "UPDATE eventos SET estado = '0' WHERE estado IN(1,9) AND fecha_fin <= '".$fechaCompletaGlobal."';";
+		$runCerrar = $emconnet->executeQuery($queryCerrar, array(), array());
 
         $logEvento = "Inicia el sorteo\n<br>";
 
         $query = "SELECT *
         		  FROM eventos
         		  WHERE estado IN(1,9)
-        		  AND fecha_inicio <= '".$fechaGlobal." ".$horaGlobal."'
-        		  AND fecha_fin >= '".$fechaGlobal." ".$horaGlobal."'
+        		  AND fecha_inicio <= '".$fechaCompletaGlobal."'
+        		  AND fecha_fin >= '".$fechaCompletaGlobal."'
         		  ;";
 
-		$run = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($query, array(), array());
+		$run = $emconnet->executeQuery($query, array(), array());
 		$x = 0;
 		$logEvento .= "---------------------------------------------------------------------\n<br>Eventos en el rango de ganadores:\n<br>\n<br>";
 		$contadorEvento = 0;
 		foreach($run as $line){
 $output->writeln("se procesa el evento ".$line["id"]);
 			$queryupdate = "UPDATE eventos SET estado = '9' WHERE id = '".$line["id"]."';";
-			$runupdate = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($queryupdate, array(), array());
+			$runupdate = $emconnet->executeQuery($queryupdate, array(), array());
 
 			$sqlSorteo = "SELECT *
 	        		  FROM
@@ -64,7 +57,7 @@ $output->writeln("se procesa el evento ".$line["id"]);
 	        		  ORDER BY fecha_creacion DESC
 	        		  LIMIT 0,1
 	        		  ;";
-	        $datosSorteo = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($sqlSorteo, array(), array());
+	        $datosSorteo = $emconnet->executeQuery($sqlSorteo, array(), array());
 	        foreach($datosSorteo as $lines){ $idSorteo = $lines["id"]; }
 $output->writeln("se procesa el sorteo ".$idSorteo);
 			$x ++;
@@ -81,7 +74,7 @@ $output->writeln("se procesa el sorteo ".$idSorteo);
 	        		  AND eventos_ganadores.id_asociado = asociados.id
 	        		  ORDER BY eventos_ganadores.fecha,eventos_ganadores.hora asc
 	        		  ;";
-	        $ganadoresEvento = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($sqlGanadoresEvento, array(), array());
+	        $ganadoresEvento = $emconnet->executeQuery($sqlGanadoresEvento, array(), array());
 	        $counterGanadores = 0;
 	        $ganadoresExcluidost = "";
 	        $nitGanadoresExcluidost = "";
@@ -110,7 +103,7 @@ $output->writeln("se excluye el ganador ".$lineg["codigo"]);
 		//aca condicional de periodicidad
 		//$horaGlobal;
 		$booleanPeriodicidad = "false";
-		if($counterGanadores == 0){
+		//if($counterGanadores == 0){
 			$fechaInicio = $line["fecha_inicio"];
 			$nuevafecha = strtotime ( '+'.$line["periodicidad"].' minutes' , strtotime ( $fechaInicio ) ) ;
 			$nuevaHora = date ( 'H:i' , $nuevafecha );
@@ -121,7 +114,7 @@ $output->writeln("se excluye el ganador ".$lineg["codigo"]);
 			if($nuevaHora <= $horaGlobal){
 				$booleanPeriodicidad = "true";
 			}
-		}else{
+		/*}else{
 			$fechaInicio = $fechaUltimoGanador;
 
 			$nuevafecha = strtotime ( '+'.$line["periodicidad"].' minutes' , strtotime ( $fechaInicio ) ) ;
@@ -132,7 +125,7 @@ $output->writeln("se excluye el ganador ".$lineg["codigo"]);
 			if($nuevaHora <= $horaGlobal){
 				$booleanPeriodicidad = "true";
 			}
-		}
+		}*/
 
        // $nuevafecha = strtotime ( '-1 day' , strtotime ( $fecha ) );
         //$nuevafecha = date ( 'Y-m-d' , $nuevafecha );
@@ -203,7 +196,7 @@ $output->writeln("buscando ganador ".$xz);
 					";
 					}
 $output->writeln($selectGanadorId);
-					$runGanadorId = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($selectGanadorId, array(), array());
+					$runGanadorId = $emconnet->executeQuery($selectGanadorId, array(), array());
 
 					$counterInsert = 0;
 					foreach ($runGanadorId as $valueg) {
@@ -228,7 +221,7 @@ $output->writeln("se inserta el ganador ".$codigoAsociadoGanador);
 		        		  fecha ='".$fechaGlobal."',
 		        		  hora ='".$horaGlobal."'
 		        		  ;";
-		        		$runInsertarGanador = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($sqlInsertarGanador, array(), array());
+		        		$runInsertarGanador = $emconnet->executeQuery($sqlInsertarGanador, array(), array());
 		        		$contadorGlobal ++;
 $output->writeln($sqlInsertarGanador);
 		        		if($ganadoresExcluidos == ""){
@@ -247,7 +240,7 @@ $output->writeln($sqlInsertarGanador);
 
 $output->writeln("se cierra el sorteo ".$idSorteo);
 				$queryupdatesorteo = "UPDATE sorteos SET estado = '1', fecha_cierre ='".date("Y-m-d H:i:s")."', response ='".$logEvento."' WHERE id = '".$idSorteo."';";
-				$runupdatesorteo = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($queryupdatesorteo, array(), array());
+				$runupdatesorteo = $emconnet->executeQuery($queryupdatesorteo, array(), array());
 $output->writeln($queryupdatesorteo);
 				$sqlInsertarNuevoSorteo = "
 					  INSERT INTO sorteos
@@ -259,19 +252,19 @@ $output->writeln($queryupdatesorteo);
 	        		  fecha_cierre ='".date("Y-m-d H:i:s")."',
 	        		  response ='Inician las inscripciones'
 	        		  ;";
-	    		$runInsertarNuevoSorteo = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($sqlInsertarNuevoSorteo, array(), array());
+	    		$runInsertarNuevoSorteo = $emconnet->executeQuery($sqlInsertarNuevoSorteo, array(), array());
 $output->writeln("se crea el nuevo sorteo ");
 				//Cerrando evento cuando llega al límite de ganadores
 				if($counterGanadores == $line["numero_maximo_ganadores"] || $privateCounterGanadores == $line["numero_maximo_ganadores"]){
 					$logEvento .= "El evento ya ha llegado al limite de ganadores, El evento sera terminado.\n<br>";
 					$queryupdateb = "UPDATE eventos SET estado = '0' WHERE id = '".$line["id"]."';";
-					$runupdateb = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($queryupdateb, array(), array());
+					$runupdateb = $emconnet->executeQuery($queryupdateb, array(), array());
 				}
 
 			}else{
 				$logEvento .= "El evento No genera ganadores ya ha llegado al limite de ganadores, El evento será terminado.\n<br>";
 				$queryupdateb = "UPDATE eventos SET estado = '0' WHERE id = '".$line["id"]."';";
-				$runupdateb = $this->getContainer()->get('doctrine')->getConnection()->executeQuery($queryupdateb, array(), array());
+				$runupdateb = $emconnet->executeQuery($queryupdateb, array(), array());
 			}
 		}
 			$logEvento .= "---------------------------------------------------------------------"."\n<br>";

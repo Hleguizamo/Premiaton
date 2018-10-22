@@ -22,3 +22,5 @@ symfony
 global.conf
 ._.DS_Store
 /web/*
+._*
+comandoanterior.txt
