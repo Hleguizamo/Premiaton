@@ -103,7 +103,7 @@ $output->writeln("se excluye el ganador ".$lineg["codigo"]);
 		//aca condicional de periodicidad
 		//$horaGlobal;
 		$booleanPeriodicidad = "false";
-		//if($counterGanadores == 0){
+		if($counterGanadores == 0){
 			$fechaInicio = $line["fecha_inicio"];
 			$nuevafecha = strtotime ( '+'.$line["periodicidad"].' minutes' , strtotime ( $fechaInicio ) ) ;
 			$nuevaHora = date ( 'H:i' , $nuevafecha );
@@ -114,7 +114,7 @@ $output->writeln("se excluye el ganador ".$lineg["codigo"]);
 			if($nuevaHora <= $horaGlobal){
 				$booleanPeriodicidad = "true";
 			}
-		/*}else{
+		}else{
 			$fechaInicio = $fechaUltimoGanador;
 
 			$nuevafecha = strtotime ( '+'.$line["periodicidad"].' minutes' , strtotime ( $fechaInicio ) ) ;
@@ -125,7 +125,7 @@ $output->writeln("se excluye el ganador ".$lineg["codigo"]);
 			if($nuevaHora <= $horaGlobal){
 				$booleanPeriodicidad = "true";
 			}
-		}*/
+		}
 
        // $nuevafecha = strtotime ( '-1 day' , strtotime ( $fecha ) );
         //$nuevafecha = date ( 'Y-m-d' , $nuevafecha );
